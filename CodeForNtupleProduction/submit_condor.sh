@@ -5,10 +5,10 @@
 ###Checking condor jobs status: condor_q <username> 
 
 ###Plain root .C to be run
-CONFIGFILE="loophlt.C"
+CONFIGFILE="loop.C"
 
 ###All the header/related files needed
-TRANSFERFILE="loophlt.C,loophlt.h"
+TRANSFERFILE="loop.C,loop.h"
 
 ###Folder location within which files are to be run
 #DATASET=/mnt/hadoop/cms/store/user/twang/HI_Dfinder/DfinderData_HIMinBiasUPC_HIRun2011-14Mar2014-v2_20150912/*
