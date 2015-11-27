@@ -1,7 +1,7 @@
 #include "loop.h"
 
-int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/forest/Run2015E/ExpressPhysics/Merged/BigMergeExpressHiForest_run262163-run262252_match.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/ntD_BigMergeExpressHiForest_run262163-run262252_match.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/forest/Run2015E/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
+         TString outfile="./ntD_HIForestExpress_run262620-v6_PbPb.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -14,6 +14,7 @@ int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/fore
   TFile* f = new TFile(infile);
   TTree* root = (TTree*)f->Get("Dfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
+  TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
   TTree* hiroot;
   if(isPbPb) hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
   TFile* outf = new TFile(outfile,"recreate");
@@ -35,6 +36,9 @@ int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/fore
   TTree* ntD3 = new TTree("ntDkpipipi","");   buildDBranch(ntD3);
   TTree* ntGen = new TTree("ntGen","");       buildGenBranch(ntGen);
   TTree* ntHlt = hltroot->CloneTree(0);
+  ntHlt->SetName("ntHlt");
+  TTree* ntSkim = skimroot->CloneTree(0);
+  ntSkim->SetName("ntSkim");
   TTree* ntHi;
   if(isPbPb) ntHi = hiroot->CloneTree(0);
   cout<<"--- Building trees finished"<<endl;
@@ -54,6 +58,7 @@ int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/fore
     {
       root->GetEntry(i);
       hltroot->GetEntry(i);
+	  skimroot->GetEntry(i);
       if(isPbPb) hiroot->GetEntry(i);
       if(i%100000==0) cout<<setw(7)<<i<<" / "<<nentries<<endl;
       if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo)
@@ -137,6 +142,7 @@ int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/fore
 	}
 
       ntHlt->Fill();
+	  ntSkim->Fill();
       if(isPbPb) ntHi->Fill();
 
       if(!REAL)
