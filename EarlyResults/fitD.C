@@ -287,7 +287,7 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   Double_t yield = mass->Integral(1.7,2.0)/0.005;
   Double_t yieldErr = mass->Integral(1.7,2.0)/0.005*mass->GetParError(0)/mass->GetParameter(0);
 
-  TLegend* leg = new TLegend(0.63,0.58,0.80,0.88,NULL,"brNDC");
+  TLegend* leg = new TLegend(0.4647651,0.4125874,0.9161074,0.6258741,NULL,"brNDC");
   leg->SetBorderSize(0);
   leg->SetTextSize(0.04);
   leg->SetTextFont(42);
