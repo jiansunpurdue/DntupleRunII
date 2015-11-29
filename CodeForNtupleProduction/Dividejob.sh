@@ -14,6 +14,6 @@ do
  startevt=$(((count-1)*EvtPerJob))
  endevt=$((count*EvtPerJob))
  echo "from $startevt to $endevt"
- nohup ./exec_test.sh loophlt.C $INFILE $OUTFILE $startevt $endevt >& out_${OUTFILE}_${startevt}_${endevt} &
+ nohup ./exec_test.sh loop.C $INFILE $OUTFILE $startevt $endevt >& out_${OUTFILE}_${startevt}_${endevt} &
  sleep 5 
 done
