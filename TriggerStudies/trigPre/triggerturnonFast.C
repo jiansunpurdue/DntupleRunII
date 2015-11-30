@@ -11,7 +11,7 @@ void triggerturnonFast(TString trigger="HLT_DmesonPPTrackingGlobal_Dpt20_v1")
   void plotTurnOn(TH1D* hnominator, TH1D* hdenominator, TString triggerlegend, TString triggername, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
 
   TString infname;
-  infname = "/data/dmeson2015/Dntuple/ntD_BigMergeExpressHiForest_run262163-run262252_match.root";
+  infname = "/data/dmeson2015/Dntuple/ntD_pp_run262163PromptReco_MB_7MEvents.root";
   //infname = "/data/dmeson2015/Dntuple/Dntuple_run262163_262165_262167_262172.root";
   TFile* infile = new TFile(infname);
   TTree* root = (TTree*)infile->Get("ntDkpi");
