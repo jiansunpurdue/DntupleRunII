@@ -1,7 +1,7 @@
 #include "loop.h"
 
-int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/forest/Run2015E/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
-         TString outfile="./ntD_HIForestExpress_run262620-v6_PbPb.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Bool_t skim=false, Bool_t gskim=true)
+int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velicanu/forest/Run2015E/HIMinimumBias2/Merged/HIForestExpress_run262620.root",
+         TString outfile="./ntD_HIForestExpress_run262620", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -11,16 +11,21 @@ int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/fore
   if(REAL) cout<<"--- Processing - REAL DATA"<<endl;
   else cout<<"--- Processing - MC"<<endl;
   
-  TFile* f = new TFile(infile);
+  TFile* f = TFile::Open(infile);
   TTree* root = (TTree*)f->Get("Dfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
   TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
   TTree* hiroot;
   if(isPbPb) hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
-  TFile* outf = new TFile(outfile,"recreate");
   setDBranch(root);
   setHltTreeBranch(hltroot);
   if(isPbPb) setHiTreeBranch(hiroot);
+
+  Long64_t nentries = root->GetEntries();
+  if( endEntries > nentries )
+      endEntries = nentries;
+  if( endEntries == -1 )  endEntries = nentries;
+  TFile *outf = new TFile(Form("%s_Evtfrom%dto%d.root", outfile.Data(), startEntries, endEntries),"recreate");
 
   int isDchannel[6];
   isDchannel[0] = 1; //k+pi-
@@ -43,7 +48,6 @@ int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/fore
   if(isPbPb) ntHi = hiroot->CloneTree(0);
   cout<<"--- Building trees finished"<<endl;
 
-  Long64_t nentries = root->GetEntries();
   Int_t flagEvt=0, offsetHltTree=0;
   TVector3* bP = new TVector3;
   TVector3* bVtx = new TVector3;
@@ -54,7 +58,7 @@ int loop(TString infile="/data/velicanu/store/group/phys_heavyions/velicanu/fore
   if(isPbPb) cout<<" "<<hiroot->GetEntries();
   cout<<endl;
   cout<<"--- Processing events"<<endl;
-  for(Int_t i=startEntries;i<nentries;i++)
+  for(Int_t i=startEntries;i<endEntries;i++)
     {
       root->GetEntry(i);
       hltroot->GetEntry(i);
