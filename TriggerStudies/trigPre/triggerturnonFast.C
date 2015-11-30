@@ -2,7 +2,7 @@
 
 TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)&&(Dmass>1.75&&Dmass<1.95)";
 TString mbtrg = "(HLT_L1MinimumBiasHF1OR_part0_v1||HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)";
-TString prefilter = Form("(Dtrk1Algo<8&&Dtrk2Algo<8)&&(DlxyBS/DlxyBSErr)>1.&&(DsvpvDistance/DsvpvDisErr)>1.5&&Dtrk1Pt>1.&&Dtrk2Pt>1.&&Dchi2cl>0.10&&TMath::Cos(Dalpha)>0.9&&%s&&%s",mvatk.Data(),mbtrg.Data());
+TString prefilter = Form("(Dtrk1Algo<8&&Dtrk2Algo<8)&&(DlxyBS/DlxyBSErr)>1.&&(DsvpvDistance/DsvpvDisErr)>1.5&&Dtrk1Pt>3.&&Dtrk2Pt>3.&&Dchi2cl>0.10&&TMath::Cos(Dalpha)>0.9&&%s&&%s",mvatk.Data(),mbtrg.Data());
 Bool_t isPbPb = false;
 
 void triggerturnonFast(TString trigger="HLT_DmesonPPTrackingGlobal_Dpt20_v1")
