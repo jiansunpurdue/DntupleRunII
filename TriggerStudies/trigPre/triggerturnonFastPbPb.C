@@ -3,7 +3,7 @@
 TString mvatk = "(Dmass>1.75&&Dmass<1.95)";
 TString mbtrg="(HLT_HIL1MinimumBiasHF1AND_v1)";
 TString prefilter = Form("(DlxyBS/DlxyBSErr)>1.&&(DsvpvDistance/DsvpvDisErr)>2.5&&Dtrk1Pt>9&&Dtrk2Pt>9.&&Dchi2cl>0.10&&TMath::Cos(Dalpha)>0.92&&%s&&%s",mvatk.Data(),mbtrg.Data());
-Bool_t isPbPb = false;
+Bool_t isPbPb = true;
 
 void triggerturnonFastPbPb(TString trigger="HLT_HIDmesonHITrackingGlobal_Dpt20_v1")
 {
@@ -11,8 +11,8 @@ void triggerturnonFastPbPb(TString trigger="HLT_HIDmesonHITrackingGlobal_Dpt20_v
   void plotTurnOn(TH1D* hnominator, TH1D* hdenominator, TString triggerlegend, TString triggername, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
 
   TString infname;
-  //infname = "/data/dmeson2015/Dntuple/ntD_HIForestMinbiasUPC_PbPb_run262548.root";       //MinimumBiasOnly
-  infname = "/data/dmeson2015/Dntuple/ntD_HIForestExpress_PbPb_run262620-v6.root";            //From Express
+  infname = "/data/dmeson2015/Dntuple/ntD_HIForestMinbiasUPC_PbPb_run262548.root";       //MinimumBiasOnly
+  //infname = "/data/dmeson2015/Dntuple/ntD_HIForestExpress_PbPb_run262620-v6.root";            //From Express
 
   TFile* infile = new TFile(infname);
   TTree* root = (TTree*)infile->Get("ntDkpi");
