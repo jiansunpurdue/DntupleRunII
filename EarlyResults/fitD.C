@@ -15,8 +15,8 @@ Double_t fixparam1=1.865;
 Bool_t isMC = false;
 TString weight = "1";
 
-const int nBins=3; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={0.0,8,20,60};
-TString trgselection = "HLT_DmesonPPTrackingGlobal_Dpt20_v1";
+const int nBins=1; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={0.0,60};
+TString trgselection = "1";
 //TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt8_v1||HLT_DmesonPPTrackingGlobal_Dpt15_v1)";
 //TString trgselection = "(HLT_L1MinimumBiasHF1OR_part0_v1||HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)";
 
@@ -38,7 +38,7 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
 
   TString inputmc = "/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root";
   TString inputdata;
-  if(!isMC) inputdata = "/data/dmeson2015/Dntuple/ntD_BigMergeExpressHiForest_run262163-run262252_match.root";
+  if(!isMC) inputdata = "/data/dmeson/DmesonNtuple2015Data/ntuple_merged.root";
   else inputdata = "/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root";
 
   void clean0 (TH1D* h);
@@ -50,7 +50,7 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
   TFile* infMC = new TFile(inputmc.Data());
 
   TTree* nt = (TTree*) inf->Get("ntDkpi");
-  TTree* HltTree = (TTree*) inf->Get("HltTree");
+  TTree* HltTree = (TTree*) inf->Get("ntHlt");
   HltTree->AddFriend(nt);
   nt->AddFriend(HltTree);
   
