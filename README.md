@@ -1,4 +1,4 @@
-Instructions for pp references
+# Instructions for pp references
 In this repository you can find the code to build the pp reference of the B meson measurements in pPb collisions at 5.02 TeV starting from the FONLL calculations. The input files .dat were produced using http://www.lpthe.jussieu.fr/~cacciari/fonll/fonllform.html using the following parameters for the calculations:
 
 Collider: LHC(pp, 5.5), Heavy quark: botton ,PDFs: CTEQ6.6
