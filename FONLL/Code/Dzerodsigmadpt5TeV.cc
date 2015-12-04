@@ -1,25 +1,32 @@
 #include "TH1F.h"
+#include "TH2F.h"
+#include "TLatex.h"
 #include <cmath>
 #include "TGraphAsymmErrors.h"
 #include "TLegend.h"
 #include "TCanvas.h"
 #include <fstream>
 #include <iostream>
+#include <TROOT.h>
+#include <TStyle.h>
+#include <TFile.h>
 
-#define BIN_NUM 392 //pPb_pt:220,pPb_y:40,pp_pt:222,pp_y:45
-#define REBIN 9     //pPb_pt:6,pPb_y:4,pp_pt:8,pp_y:4
-#define REBINp 10    //pPb_pt:7,pPb_y:5,pp_pt:9,pp_y:5
-#define HMIN 2      //pPb_pt:5,pPb_y:-2,pp_pt:9,pp_y:0
-#define HMAX 100     //pPb_pt:55,pPb_y:2,pp_pt:120,pp_y:2.25
+const int BIN_NUM= 392;
+const int REBIN=18 ;
+const int REBINp =REBIN+1;
+const int HMIN=2;
+const int HMAX=100;
+const double binsize=((double)(HMAX)-(double)(HMIN))/(double)(BIN_NUM);
+double rebin[REBINp] = {2.,4.,6.,8.,10.,15.,20.,25.,30.,35.,40.,45.,50.,55.,60.,65.,70.,80.,100.};
 
-int Dzerodsigmadpt()
+void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1")
 {
 
-  gROOT->SetStyle("Plain");
+   gROOT->SetStyle("Plain");
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
 
-  ifstream getdata("../FONLLInputs/fo_Dzero_pp_2.76_y2.dat");
+  ifstream getdata(Form("../FONLLInputs/fo_%s.dat",input.Data()));
 
   if(!getdata.is_open())
     {
@@ -67,8 +74,7 @@ int Dzerodsigmadpt()
       hmaxpdf->SetBinContent(i+1,max_pdf[i]);
     }
   //Rebin Edge
-  double rebin[REBINp] = {4.5,5.5,7,9,11,13,16,20,28,40};
-
+  
   TH1F* hpt_rebin = (TH1F*)hpt->Rebin(REBIN,"hpt_rebin",rebin);
   TH1F* hminall_rebin = (TH1F*)hminsc->Rebin(REBIN,"hminall_rebin",rebin);
   TH1F* hmaxall_rebin = (TH1F*)hmaxsc->Rebin(REBIN,"hmaxall_rebin",rebin);
@@ -79,14 +85,21 @@ int Dzerodsigmadpt()
   TH1F* hminpdf_rebin = (TH1F*)hminpdf->Rebin(REBIN,"hminpdf_rebin",rebin);
   TH1F* hmaxpdf_rebin = (TH1F*)hmaxpdf->Rebin(REBIN,"hmaxpdf_rebin",rebin);
 
-  //bin middle
-  double apt[REBIN] = {5,6.25,8,10,12,14.5,18,24,34};//pPb_pt
-  //bin half width
-  double aptl[REBIN] = {0.5,0.75,1,1,1,1.5,2,4,6};//pPb_pt
-  double asigma[REBIN],aminall[REBIN],amaxall[REBIN],aminsc[REBIN],amaxsc[REBIN],aminmass[REBIN],amaxmass[REBIN],aminpdf[REBIN],amaxpdf[REBIN],aerrorl[REBIN],aerrorh[REBIN];
+  double asigma[REBIN],aminall[REBIN],amaxall[REBIN],aminsc[REBIN],amaxsc[REBIN],aminmass[REBIN],amaxmass[REBIN],aminpdf[REBIN],amaxpdf[REBIN],aerrorl[REBIN],aerrorh[REBIN]; 
 
+  //bin middle
+  double apt[REBIN];
+  //bin half width
+  double aptl[REBIN];
   //number of every rebined bin
-  double bin_num[REBIN] = {4,6,8,8,8,12,16,32,48};//pPb_pt
+  double bin_num[REBIN];
+  
+  
+  for (int ibin=0; ibin<REBIN; ibin++){
+    apt[ibin]=(rebin[ibin+1]+rebin[ibin])/2.;
+    aptl[ibin] = (rebin[ibin+1]-rebin[ibin])/2;
+    bin_num[ibin]=aptl[ibin]/binsize;
+  }
   
   int j;
     
@@ -124,16 +137,30 @@ int Dzerodsigmadpt()
       aerrorh[j] = amaxall[j]-asigma[j];//all,sc,mass,pdf
     }
 
-  cout<<"------- pp at 2.75------"<<endl;
+  cout<<"------- pp at 5.5------"<<endl;
   cout<<endl;
- 
+
   TGraphAsymmErrors* gaeSigma = new TGraphAsymmErrors(REBIN, apt, asigma, aptl, aptl, aerrorl, aerrorh);
   gaeSigma->SetFillColor(2);
   gaeSigma->SetFillStyle(3001);
 
+  TGraphAsymmErrors* gaeSigmaDzero=(TGraphAsymmErrors*)gaeSigma->Clone();
+  gaeSigmaDzero->SetName("gaeSigmaDzero");
+  gaeSigmaDzero->SetFillColor(2);
+  gaeSigmaDzero->SetFillStyle(3001); 
+  gaeSigmaDzero->SetTitle(";p_{T}(GeV/c);d#sigma/dp_{T} (D^{0}) (pb GeV-1c)");
+
+  double norm=0.557;
+  
+  for (int i=0;i<gaeSigmaDzero->GetN();i++){
+    gaeSigmaDzero->GetY()[i] *= norm;
+    gaeSigmaDzero->SetPointEYhigh(i,gaeSigmaDzero->GetErrorYhigh(i)*norm);
+    gaeSigmaDzero->SetPointEYlow(i,gaeSigmaDzero->GetErrorYlow(i)*norm); 
+  }
+     
   TCanvas* cr = new TCanvas("cr","cr",600,500);
   cr->SetLogy();
-  TH2F* hempty=new TH2F("hempty","",10,3,70.,10.,10.,5000000000);  
+  TH2F* hempty=new TH2F("hempty","",10,0,100.,10.,10.,5000000000);  
   hempty->GetXaxis()->SetTitle("p_{t} (GeV/c)");
   hempty->GetYaxis()->SetTitle("d#sigma(D)/dp_{T}(pb GeV-1c)");
   hempty->GetXaxis()->SetTitleOffset(1.);
@@ -153,64 +180,29 @@ int Dzerodsigmadpt()
   hminall->Draw("same");
   hmaxall->Draw("same");
   hpt->Draw("same");
-  gaeSigma->SetLineWidth(3);
-  gaeSigma->Draw("psame");
-  
-  TLatex * tlatex=new TLatex(0.18,0.85,"pp collisions at 2.75 from FONLL, |y|<2");
-  tlatex->SetNDC();
-  tlatex->SetTextColor(1);
-  tlatex->SetTextFont(42);
-  tlatex->SetTextSize(0.04);
-  tlatex->Draw();
-  TLatex * tlatex=new TLatex(0.18,0.80,"Total syst uncertainties shown");
-  tlatex->SetNDC();
-  tlatex->SetTextColor(1);
-  tlatex->SetTextFont(42);
-  tlatex->SetTextSize(0.04);
-  tlatex->Draw();
-  cr->SaveAs("Plots/cBmesonPredFONLLBplusBinning.eps");
-    
-  TGraphAsymmErrors* gaeSigmaDzero=(TGraphAsymmErrors*)gaeSigma->Clone();
-  gaeSigmaDzero->SetName("gaeSigmaDzero");
-
-  double norm=0.557;
-  
-  for (int i=0;i<gaeSigmaDzero->GetN();i++){
-    gaeSigmaDzero->GetY()[i] *= norm;
-    gaeSigmaDzero->SetPointEYhigh(i,gaeSigmaDzero->GetErrorYhigh(i)*norm);
-    gaeSigmaDzero->SetPointEYlow(i,gaeSigmaDzero->GetErrorYlow(i)*norm); 
-  }
-  
-  gaeSigmaDzero->SetFillColor(2);
-  gaeSigmaDzero->SetFillStyle(3001); 
-  gaeSigmaDzero->SetTitle(";p_{T}(GeV/c);d#sigma/dp_{T} (D^{0}) (pb GeV-1c)");
-   
-  TH2F* hempty=new TH2F("hempty","",10,3,70.,10.,10.,5000000000);  
-  hempty->GetXaxis()->SetTitle("p_{T} (GeV/c)");
-  hempty->GetXaxis()->SetTitleOffset(1.);
-  hempty->GetYaxis()->SetTitleOffset(.9);
-  hempty->GetXaxis()->SetTitleSize(0.045);
-  hempty->GetYaxis()->SetTitleSize(0.045);
-  hempty->GetXaxis()->SetTitleFont(42);
-  hempty->GetYaxis()->SetTitleFont(42);
-  hempty->GetXaxis()->SetLabelFont(42);
-  hempty->GetYaxis()->SetLabelFont(42);
-  hempty->GetXaxis()->SetLabelSize(0.04);
-  hempty->GetYaxis()->SetLabelSize(0.035);  
-  hempty->GetYaxis()->SetTitle("d#sigma/dp_{T}(D^{0}) (pb b GeV-1c)");
-
-  TCanvas*canvas=new TCanvas("canvas","canvas",600,500);
-  canvas->SetLogy();
-  hempty->Draw();
+  gaeSigmaDzero->SetLineWidth(3);
   gaeSigmaDzero->Draw("psame");
   
-  //TLatex * tlatex=new TLatex(0.2,0.85,"B^{+}=40.1%, |y|<1.93, BR unc not shown");
-  TLatex * tlatex=new TLatex(0.2,0.85,"D^{0},|y|<2, FF=0.557, BR unc not shown");
+  TLatex * tlatex=new TLatex(0.18,0.85,"pp collisions at 5.5 from FONLL, |y|<1");
   tlatex->SetNDC();
   tlatex->SetTextColor(1);
   tlatex->SetTextFont(42);
-  tlatex->SetTextSize(0.05);
+  tlatex->SetTextSize(0.04);
   tlatex->Draw();
+  
+  TLatex * tlatextotunc=new TLatex(0.18,0.80,"Total syst uncertainties shown");
+  tlatextotunc->SetNDC();
+  tlatextotunc->SetTextColor(1);
+  tlatextotunc->SetTextFont(42);
+  tlatextotunc->SetTextSize(0.04);
+  tlatextotunc->Draw();
+  
+  TLatex * tlatexD0=new TLatex(0.2,0.7,"D^{0},|y|<1, FF=0.557, BR unc not shown");
+  tlatexD0->SetNDC();
+  tlatexD0->SetTextColor(1);
+  tlatexD0->SetTextFont(42);
+  tlatexD0->SetTextSize(0.05);
+  tlatexD0->Draw();
   
   TLatex * tlatextemp=new TLatex(0.2,0.75,"");
   tlatextemp->SetNDC();
@@ -218,15 +210,14 @@ int Dzerodsigmadpt()
   tlatextemp->SetTextFont(42);
   tlatextemp->SetTextSize(0.05);
   tlatextemp->Draw();
-
   
   gaeSigma->SetName("gaeSigma");
   gaeSigmaDzero->SetName("gaeSigmaDzero");
-  canvas->SaveAs("Plots/canvasDzero.eps");
-  canvas->SaveAs("Plots/canvasDzero.pdf");
-  TFile*foutput=new TFile("../outputDzero.root","recreate");
+  cr->SaveAs(Form("canvas_%s.pdf",input.Data()));
+  cr->SaveAs(Form("canvas_%s.eps",input.Data()));
+  
+  TFile*foutput=new TFile(Form("../Results/output_%s.root",input.Data()),"recreate");
   foutput->cd();
-  gaeSigma->Write();
   gaeSigmaDzero->Write();
   
 }
