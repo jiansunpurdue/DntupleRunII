@@ -15,7 +15,7 @@ Double_t fixparam1=1.865;
 Bool_t isMC = false;
 TString weight = "1";
 
-const int nBins=4; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={60,70,80,90,100};
+const int nBins=4; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={60,65,70,80,100};
 TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt60_v1)";
 
 TString cut = cut0;
