@@ -19,7 +19,7 @@ const int HMAX=100;
 const double binsize=((double)(HMAX)-(double)(HMIN))/(double)(BIN_NUM);
 double rebin[REBINp] = {2.,4.,6.,8.,10.,15.,20.,25.,30.,35.,40.,45.,50.,55.,60.,65.,70.,80.,100.};
 
-void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1")
+void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1",double norm=0.557)
 {
 
    gROOT->SetStyle("Plain");
@@ -98,7 +98,7 @@ void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1")
   for (int ibin=0; ibin<REBIN; ibin++){
     apt[ibin]=(rebin[ibin+1]+rebin[ibin])/2.;
     aptl[ibin] = (rebin[ibin+1]-rebin[ibin])/2;
-    bin_num[ibin]=aptl[ibin]/binsize;
+    bin_num[ibin]=aptl[ibin]/binsize*2;
   }
   
   int j;
@@ -149,8 +149,6 @@ void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1")
   gaeSigmaDzero->SetFillColor(2);
   gaeSigmaDzero->SetFillStyle(3001); 
   gaeSigmaDzero->SetTitle(";p_{T}(GeV/c);d#sigma/dp_{T} (D^{0}) (pb GeV-1c)");
-
-  double norm=0.557;
   
   for (int i=0;i<gaeSigmaDzero->GetN();i++){
     gaeSigmaDzero->GetY()[i] *= norm;
@@ -180,9 +178,12 @@ void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1")
   hminall->Draw("same");
   hmaxall->Draw("same");
   hpt->Draw("same");
+  gaeSigma->SetLineWidth(3);
+  gaeSigma->Draw("psame");
   gaeSigmaDzero->SetLineWidth(3);
+  gaeSigmaDzero->SetLineColor(2);
   gaeSigmaDzero->Draw("psame");
-  
+
   TLatex * tlatex=new TLatex(0.18,0.85,"pp collisions at 5.5 from FONLL, |y|<1");
   tlatex->SetNDC();
   tlatex->SetTextColor(1);
@@ -197,7 +198,7 @@ void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1")
   tlatextotunc->SetTextSize(0.04);
   tlatextotunc->Draw();
   
-  TLatex * tlatexD0=new TLatex(0.2,0.7,"D^{0},|y|<1, FF=0.557, BR unc not shown");
+  TLatex * tlatexD0=new TLatex(0.2,0.7,"D^{0},|y|<1, BR unc not shown");
   tlatexD0->SetNDC();
   tlatexD0->SetTextColor(1);
   tlatexD0->SetTextFont(42);
@@ -211,6 +212,14 @@ void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1")
   tlatextemp->SetTextSize(0.05);
   tlatextemp->Draw();
   
+  TLegend* leg=new TLegend(0.4,0.5,0.89,0.6);
+  leg->SetFillColor(0);
+  TLegendEntry* ent_gaeSigma=leg->AddEntry(gaeSigma,"Frag.Fraction=1.0 (pure FONLL)","PL");
+  ent_gaeSigma->SetTextColor(gaeSigma->GetMarkerColor());
+  TLegendEntry* ent_gaeSigmaDzero=leg->AddEntry(gaeSigmaDzero,"Multiplied by Frag. Fraction=0.577","PL");
+  ent_gaeSigmaDzero->SetTextColor(gaeSigmaDzero->GetMarkerColor());
+  leg->Draw();
+
   gaeSigma->SetName("gaeSigma");
   gaeSigmaDzero->SetName("gaeSigmaDzero");
   cr->SaveAs(Form("canvas_%s.pdf",input.Data()));
