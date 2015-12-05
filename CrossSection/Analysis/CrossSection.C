@@ -7,7 +7,7 @@ void CrossSection(TString particle="Dzero"){
   TFile*filePPReference=new TFile("../../FONLL/Results/output_pp_d0meson5_5TeV_y1.root");  
   TGraphAsymmErrors*gaeBplusReference=(TGraphAsymmErrors*)filePPReference->Get(Form("gaeSigma%s",particle.Data()));
   
-  TFile*filepPb=new TFile(Form("ResultsD0_pp/PtSigma%s_1.root",particle.Data()));
+  TFile*filepPb=new TFile(Form("ResultsD0_pp/PtSigma%s.root",particle.Data()));
   TH1F*hSigmapPbStat=(TH1F*)filepPb->Get("hPtSigma");    
   double scalingfactor=1;
     
@@ -28,9 +28,9 @@ void CrossSection(TString particle="Dzero"){
   canvasSigma->SetBottomMargin(0.1165254);
   canvasSigma->SetFrameBorderMode(0);
   canvasSigma->SetFrameBorderMode(0);
- // canvasSigma->SetLogy();
+  canvasSigma->SetLogy();
   
-  TH2F* hemptySigma=new TH2F("hemptySigma","",50,0.,110,10.,1e-1,1e3);  
+  TH2F* hemptySigma=new TH2F("hemptySigma","",50,60.,110,10.,1e-1,1e3);  
   hemptySigma->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptySigma->GetXaxis()->CenterTitle();
   hemptySigma->GetYaxis()->CenterTitle();
@@ -52,6 +52,7 @@ void CrossSection(TString particle="Dzero"){
   hemptySigma->Draw();
   hSigmapPbStat->Draw("epsame");  
   gaeBplusReference->Draw("2same");
+  canvasSigma->SaveAs("canvasSigmaDzero.pdf");
 
 }
 
