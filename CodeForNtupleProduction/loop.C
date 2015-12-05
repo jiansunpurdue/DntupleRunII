@@ -2,7 +2,7 @@
 using namespace std;
 
 int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velicanu/forest/Run2015E/HIMinimumBias2/Merged/HIForestExpress_run262620.root",
-         TString outfile="./ntD_HIForestExpress_run262620", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true)
+         TString outfile="./ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -26,7 +26,7 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
   if( endEntries > nentries )
       endEntries = nentries;
   if( endEntries == -1 )  endEntries = nentries;
-  TFile *outf = new TFile(Form("%s_Evtfrom%dto%d.root", outfile.Data(), startEntries, endEntries),"recreate");
+  TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
 
   int isDchannel[6];
   isDchannel[0] = 1; //k+pi-
