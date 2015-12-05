@@ -1,7 +1,7 @@
 #include "uti.h"
 #include "fitD.h"
 
-Double_t luminosity=9.97;
+Double_t luminosity=9.97; //lumi estimated for RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274
 Double_t BRchain=0.0388;
 
 Double_t setparam0=100.;
@@ -15,8 +15,9 @@ Double_t fixparam1=1.865;
 Bool_t isMC = false;
 TString weight = "1";
 
-const int nBins=4; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={60,65,70,80,100};
-TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt60_v1&&(RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274))";
+const int nBins=7; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={50,55,60,65,70,80,100,150};
+//TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt50_v1)";TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt60_v1&&(RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274))";
+
 
 TString cut = cut0;
 TString seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
