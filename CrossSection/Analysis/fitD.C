@@ -1,7 +1,7 @@
 #include "uti.h"
 #include "fitD.h"
 
-Double_t luminosity=150.;
+Double_t luminosity=9.97; //lumi estimated for RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274
 Double_t BRchain=0.0388;
 
 Double_t setparam0=100.;
@@ -15,8 +15,9 @@ Double_t fixparam1=1.865;
 Bool_t isMC = false;
 TString weight = "1";
 
-const int nBins=4; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={60,65,70,80,100};
-TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt60_v1)";
+const int nBins=15; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={15,20,25,30,35,40,45,50,55,60,65,70,80,100,150,200};
+TString trgselection = "((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>15&&Dpt<50)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>50))";
+//TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&(RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274))";
 
 TString cut = cut0;
 TString seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
@@ -71,9 +72,9 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
       hPt->SetBinError(i+1,yieldErr/(ptBins[i+1]-ptBins[i]));
     }  
 
-  ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"Dgen==23333"));
+  ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
   divideBinWidth(hPtMC);
-  ntMC->Project("hPtRecoTruth","Dpt",TCut(selmc.Data())&&"Dgen==23333");
+  ntMC->Project("hPtRecoTruth","Dpt",TCut(selmc.Data())&&"(Dgen==23333)");
   divideBinWidth(hPtRecoTruth);
   ntGen->Project("hPtGen","Gpt",TCut(weight)*(TCut(selmcgen.Data())));
   divideBinWidth(hPtGen);
@@ -116,13 +117,13 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
     }
 
   TH1D* hPtSigma= (TH1D*)hPtCor->Clone("hPtSigma");
-  hPtSigma->SetTitle(";D^{0} p_{T} (GeV/c);d#sigma(D^{0})/dp_{T}");
+  hPtSigma->SetTitle(";D^{0} p_{T} (GeV/c);d#sigma(D^{0})/dp_{T} (pb/GeV)");
   hPtSigma->Scale(1./(2*luminosity*BRchain));
   TCanvas* cPtSigma=  new TCanvas("cPtSigma","",600,600);
   cPtSigma->SetLogy();
   hPtSigma->Draw();
   
-  TFile* outf = new TFile(Form("ResultsD0_pp/alphaD0%s.root",label.Data()),"recreate");
+  TFile* outf = new TFile(Form("ResultsD0_pp/PtSigmaDzero%s.root",label.Data()),"recreate");
   outf->cd();
   hPt->Write();
   hEff->Write();
@@ -328,3 +329,4 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   
   return mass;
 }
+
