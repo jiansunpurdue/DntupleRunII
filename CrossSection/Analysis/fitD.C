@@ -71,9 +71,9 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
       hPt->SetBinError(i+1,yieldErr/(ptBins[i+1]-ptBins[i]));
     }  
 
-  ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"Dgen==23333"));
+  ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333 || Dgen==23344)"));
   divideBinWidth(hPtMC);
-  ntMC->Project("hPtRecoTruth","Dpt",TCut(selmc.Data())&&"Dgen==23333");
+  ntMC->Project("hPtRecoTruth","Dpt",TCut(selmc.Data())&&"(Dgen==23333 || Dgen==23344)");
   divideBinWidth(hPtRecoTruth);
   ntGen->Project("hPtGen","Gpt",TCut(weight)*(TCut(selmcgen.Data())));
   divideBinWidth(hPtGen);
