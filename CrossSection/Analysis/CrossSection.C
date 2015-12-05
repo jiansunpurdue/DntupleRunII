@@ -9,19 +9,27 @@ void CrossSection(TString particle="Dzero"){
   
   TFile*filepPb=new TFile(Form("ResultsD0_pp/PtSigma%s.root",particle.Data()));
   TH1F*hSigmapPbStat=(TH1F*)filepPb->Get("hPtSigma");    
-  double scalingfactor=1;
-    
-  for (int i=0;i<hSigmapPbStat->GetNbinsX();i++){
-    hSigmapPbStat->SetBinContent(i+1,scalingfactor*hSigmapPbStat->GetBinContent(i+1));
-    hSigmapPbStat->SetBinError(i+1,scalingfactor*hSigmapPbStat->GetBinError(i+1));
-  }
+  TH1F*hSigmapPbStatLowPt=(TH1F*)filepPb->Get("hPtSigma");    
+
+  Double_t xlow,ylow;
+  Double_t xhigh,yhigh;
+  gaeBplusReference->GetPoint(3,xlow,ylow);
+  gaeBplusReference->GetPoint(7,xhigh,yhigh);
   
-  Double_t x,y;
-  gaeBplusReference->GetPoint(0,x,y);
-  cout<<"y"<<y<<endl;
-  cout<<"hSigmapPbStat"<<hSigmapPbStat->GetBinContent(1)<<endl;
-  hSigmapPbStat->Scale(1/hSigmapPbStat->GetBinContent(1)*y);
-  cout<<"hSigmapPbStat"<<hSigmapPbStat->GetBinContent(1)<<endl;
+  double normhistolow=hSigmapPbStat->GetBinContent(4);
+  double normhistohigh=hSigmapPbStat->GetBinContent(8);
+
+  for (int i=0;i<15;i++){
+    if(i<7){
+      hSigmapPbStat->SetBinContent(i+1,hSigmapPbStat->GetBinContent(i+1)*ylow/normhistolow);
+      hSigmapPbStat->SetBinError(i+1,hSigmapPbStat->GetBinError(i+1)*ylow/normhistolow);
+    }
+    if(i>=7){
+      hSigmapPbStat->SetBinContent(i+1,hSigmapPbStat->GetBinContent(i+1)*yhigh/normhistohigh);
+      hSigmapPbStat->SetBinError(i+1,hSigmapPbStat->GetBinError(i+1)*yhigh/normhistohigh);
+    }
+
+  }
 
   
   TCanvas *canvasSigma=new TCanvas("canvasSigma","canvasSigma",500,500);   
@@ -38,7 +46,7 @@ void CrossSection(TString particle="Dzero"){
   canvasSigma->SetFrameBorderMode(0);
   canvasSigma->SetLogy();
   
-  TH2F* hemptySigma=new TH2F("hemptySigma","",50,50.,160,10.,1,1e3);  
+  TH2F* hemptySigma=new TH2F("hemptySigma","",50,10.,210,10.,1e-2,1e6);  
   hemptySigma->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptySigma->GetXaxis()->CenterTitle();
   hemptySigma->GetYaxis()->CenterTitle();
@@ -60,6 +68,7 @@ void CrossSection(TString particle="Dzero"){
   hemptySigma->SetMinimum(0.);
   hemptySigma->Draw();
   hSigmapPbStat->Draw("epsame");  
+ // hSigmapPbStatLowPt->Draw("epsame");  
   gaeBplusReference->Draw("2same");  
   
   TLegend *legendSigma=new TLegend(0.5100806,0.5868644,0.8084677,0.7605932,"");
@@ -93,7 +102,7 @@ void CrossSection(TString particle="Dzero"){
   tlatexlumi->SetTextColor(1);
   tlatexlumi->SetTextFont(42);
   tlatexlumi->SetTextSize(0.045);
-  tlatexlumi->Draw();
+  //tlatexlumi->Draw();
 
   canvasSigma->SaveAs("canvasSigmaDzero.pdf");
 

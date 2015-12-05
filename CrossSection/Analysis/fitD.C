@@ -15,10 +15,9 @@ Double_t fixparam1=1.865;
 Bool_t isMC = false;
 TString weight = "1";
 
-const int nBins=7; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={50,55,60,65,70,80,100,150};
-TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt50_v1)";
+const int nBins=15; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={15,20,25,30,35,40,45,50,55,60,65,70,80,100,150,200};
+TString trgselection = "((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>15&&Dpt<50)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>50))";
 //TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&(RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274))";
-
 
 TString cut = cut0;
 TString seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
