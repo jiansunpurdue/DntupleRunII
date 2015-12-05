@@ -1,5 +1,5 @@
 TString cmcut = "Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)";
-TString ptcut0 = "(DsvpvDistance/DsvpvDisErr)>2.55&&Dchi2cl>0.043";
+TString ptcut0 = "(DsvpvDistance/DsvpvDisErr)>3.50&&Dchi2cl>0.05&&Dalpha<0.12";
 TString cut0 = Form("%s&&%s",cmcut.Data(),ptcut0.Data());
 TString selmcgen = Form("(GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1)");
 
