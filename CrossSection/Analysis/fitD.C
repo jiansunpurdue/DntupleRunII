@@ -16,7 +16,8 @@ Bool_t isMC = false;
 TString weight = "1";
 
 const int nBins=7; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={50,55,60,65,70,80,100,150};
-//TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt50_v1)";TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt60_v1&&(RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274))";
+TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt50_v1)";
+//TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&(RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274))";
 
 
 TString cut = cut0;
@@ -72,9 +73,9 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
       hPt->SetBinError(i+1,yieldErr/(ptBins[i+1]-ptBins[i]));
     }  
 
-  ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333 || Dgen==23344)"));
+  ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
   divideBinWidth(hPtMC);
-  ntMC->Project("hPtRecoTruth","Dpt",TCut(selmc.Data())&&"(Dgen==23333 || Dgen==23344)");
+  ntMC->Project("hPtRecoTruth","Dpt",TCut(selmc.Data())&&"(Dgen==23333)");
   divideBinWidth(hPtRecoTruth);
   ntGen->Project("hPtGen","Gpt",TCut(weight)*(TCut(selmcgen.Data())));
   divideBinWidth(hPtGen);
