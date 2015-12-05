@@ -30,11 +30,11 @@ void CrossSection(TString particle="Dzero"){
   canvasSigma->SetFrameBorderMode(0);
   canvasSigma->SetLogy();
   
-  TH2F* hemptySigma=new TH2F("hemptySigma","",50,60.,110,10.,1e-1,1e3);  
+  TH2F* hemptySigma=new TH2F("hemptySigma","",50,50.,110,10.,1,1e3);  
   hemptySigma->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptySigma->GetXaxis()->CenterTitle();
   hemptySigma->GetYaxis()->CenterTitle();
-  hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( #pb GeV^{-1}c)");
+  hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( pb GeV^{-1}c)");
   
 
   hemptySigma->GetXaxis()->SetTitleOffset(1.);
@@ -51,8 +51,43 @@ void CrossSection(TString particle="Dzero"){
   hemptySigma->SetMinimum(0.);
   hemptySigma->Draw();
   hSigmapPbStat->Draw("epsame");  
-  gaeBplusReference->Draw("2same");
+  gaeBplusReference->Draw("2same");  
+  
+  TLegend *legendSigma=new TLegend(0.5100806,0.5868644,0.8084677,0.7605932,"");
+  legendSigma->SetBorderSize(0);
+  legendSigma->SetLineColor(0);
+  legendSigma->SetFillColor(0);
+  legendSigma->SetFillStyle(1001);
+  legendSigma->SetTextFont(42);
+  legendSigma->SetTextSize(0.045);
+  
+  TLegendEntry *ent_SigmapPb=legendSigma->AddEntry(hSigmapPbStat,"pp","pf");
+  ent_SigmapPb->SetTextFont(42);
+  ent_SigmapPb->SetLineColor(1);
+  ent_SigmapPb->SetMarkerColor(1);
+  
+  TLegendEntry *ent_Sigmapp=legendSigma->AddEntry(gaeBplusReference,"FONLL pp ref.","f");
+  ent_Sigmapp->SetTextFont(42);
+  ent_Sigmapp->SetLineColor(5);
+  ent_Sigmapp->SetMarkerColor(1);
+  legendSigma->Draw("same");
+    
+  TLatex * tlatex1=new TLatex(0.1612903,0.8625793,"CMS Preliminary     pp #sqrt{s}= 5.02 TeV");
+  tlatex1->SetNDC();
+  tlatex1->SetTextColor(1);
+  tlatex1->SetTextFont(42);
+  tlatex1->SetTextSize(0.045);
+  tlatex1->Draw();
+    
+  TLatex * tlatexlumi=new TLatex(0.671371,0.7801268,"L = 9.97 pb^{-1}");
+  tlatexlumi->SetNDC();
+  tlatexlumi->SetTextColor(1);
+  tlatexlumi->SetTextFont(42);
+  tlatexlumi->SetTextSize(0.045);
+  tlatexlumi->Draw();
+
   canvasSigma->SaveAs("canvasSigmaDzero.pdf");
+
 
 }
 
