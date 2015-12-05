@@ -12,12 +12,15 @@
 #include <TFile.h>
 
 const int BIN_NUM= 392;
-const int REBIN=18 ;
+//const int REBIN=18 ;
+const int REBIN=4 ;
 const int REBINp =REBIN+1;
 const int HMIN=2;
 const int HMAX=100;
 const double binsize=((double)(HMAX)-(double)(HMIN))/(double)(BIN_NUM);
-double rebin[REBINp] = {2.,4.,6.,8.,10.,15.,20.,25.,30.,35.,40.,45.,50.,55.,60.,65.,70.,80.,100.};
+//double rebin[REBINp] = {2.,4.,6.,8.,10.,15.,20.,25.,30.,35.,40.,45.,50.,55.,60.,65.,70.,80.,100.};
+double rebin[REBINp] = {60,65,70,80,100};
+
 
 void Dzerodsigmadpt(TString input="pp_d0meson5_5TeV_y1",double norm=0.557)
 {
