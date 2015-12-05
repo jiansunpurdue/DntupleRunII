@@ -16,6 +16,14 @@ void CrossSection(TString particle="Dzero"){
     hSigmapPbStat->SetBinError(i+1,scalingfactor*hSigmapPbStat->GetBinError(i+1));
   }
   
+  Double_t x,y;
+  gaeBplusReference->GetPoint(0,x,y);
+  cout<<"y"<<y<<endl;
+  cout<<"hSigmapPbStat"<<hSigmapPbStat->GetBinContent(1)<<endl;
+  hSigmapPbStat->Scale(1/hSigmapPbStat->GetBinContent(1)*y);
+  cout<<"hSigmapPbStat"<<hSigmapPbStat->GetBinContent(1)<<endl;
+
+  
   TCanvas *canvasSigma=new TCanvas("canvasSigma","canvasSigma",500,500);   
   canvasSigma->cd();
   canvasSigma->Range(-1.989924,-0.2917772,25.49622,2.212202);
@@ -30,11 +38,12 @@ void CrossSection(TString particle="Dzero"){
   canvasSigma->SetFrameBorderMode(0);
   canvasSigma->SetLogy();
   
-  TH2F* hemptySigma=new TH2F("hemptySigma","",50,50.,110,10.,1,1e3);  
+  TH2F* hemptySigma=new TH2F("hemptySigma","",50,50.,160,10.,1,1e3);  
   hemptySigma->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptySigma->GetXaxis()->CenterTitle();
   hemptySigma->GetYaxis()->CenterTitle();
-  hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( pb GeV^{-1}c)");
+  //hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( pb GeV^{-1}c)");
+  hemptySigma->GetYaxis()->SetTitle("arbitrary units");
   
 
   hemptySigma->GetXaxis()->SetTitleOffset(1.);
