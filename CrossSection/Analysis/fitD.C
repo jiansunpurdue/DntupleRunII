@@ -1,5 +1,4 @@
 #include "uti.h"
-#include "fitD.h"
 
 Double_t luminosity=9.97; //lumi estimated for RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274
 Double_t BRchain=0.0388;
@@ -15,13 +14,19 @@ Double_t fixparam1=1.865;
 Bool_t isMC = false;
 TString weight = "1";
 
-const int nBins=15; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={15,20,25,30,35,40,45,50,55,60,65,70,80,100,150,200};
+TString cmcut = "Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)";
+TString ptcut0 = "(DsvpvDistance/DsvpvDisErr)>3.50&&Dchi2cl>0.05&&Dalpha<0.12";
+TString cut0 = Form("%s&&%s",cmcut.Data(),ptcut0.Data());
+TString selmcgen = Form("(GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1)");
+//TString ptcut1 = "Dalpha<0.12&&((Dpt>1.0&&Dpt<3.5&&(DsvpvDistance/DsvpvDisErr)>5.90&&Dchi2cl>0.248) || (Dpt>3.5&&Dpt<4.5&&(DsvpvDistance/DsvpvDisErr)>5.81&&Dchi2cl>0.200) || (Dpt>4.5&&Dpt<5.5&&(DsvpvDistance/DsvpvDisErr)>5.10&&Dchi2cl>0.191) || (Dpt>5.5&&Dpt<7.0&&(DsvpvDistance/DsvpvDisErr)>4.62&&Dchi2cl>0.148) || (Dpt>7.0&&Dpt<9.0&&(DsvpvDistance/DsvpvDisErr)>4.46&&Dchi2cl>0.102) || (Dpt>9.0&&Dpt<11.&&(DsvpvDistance/DsvpvDisErr)>4.39&&Dchi2cl>0.080) || (Dpt>11.&&Dpt<13.&&(DsvpvDistance/DsvpvDisErr)>4.07&&Dchi2cl>0.073) || (Dpt>13.&&Dpt<16.&&(DsvpvDistance/DsvpvDisErr)>3.88&&Dchi2cl>0.060) || (Dpt>16.&&Dpt<20.&&(DsvpvDistance/DsvpvDisErr)>3.67&&Dchi2cl>0.055) || (Dpt>20.&&Dpt<28.&&(DsvpvDistance/DsvpvDisErr)>3.25&&Dchi2cl>0.054) || (Dpt>28.&&Dpt<40.&&(DsvpvDistance/DsvpvDisErr)>2.55&&Dchi2cl>0.043))";
 TString trgselection = "((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>15&&Dpt<50)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>50))";
 //TString trgselection = "(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&(RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274))";
 
 TString cut = cut0;
 TString seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
 TString selmc = Form("%s",cut.Data());
+
+const int nBins=15; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={15,20,25,30,35,40,45,50,55,60,65,70,80,100,150,200};
 
 void fitD(TString infname="", TString label="", Bool_t doweight=true)
 {
