@@ -14,15 +14,16 @@ void CrossSection(TString particle="Dzero"){
   Double_t xlow,ylow;
   Double_t xhigh,yhigh;
   gaeBplusReference->GetPoint(3,xlow,ylow);
-  gaeBplusReference->GetPoint(7,xhigh,yhigh);
+  gaeBplusReference->GetPoint(8,xhigh,yhigh);
   
   double normhistolow=hSigmapPbStat->GetBinContent(4);
-  double normhistohigh=hSigmapPbStat->GetBinContent(8);
+  double normhistohigh=hSigmapPbStat->GetBinContent(9);
+  double triggercorrection=1108.61/56.053;
 
   for (int i=0;i<15;i++){
     if(i<7){
-      hSigmapPbStat->SetBinContent(i+1,hSigmapPbStat->GetBinContent(i+1)*ylow/normhistolow);
-      hSigmapPbStat->SetBinError(i+1,hSigmapPbStat->GetBinError(i+1)*ylow/normhistolow);
+      hSigmapPbStat->SetBinContent(i+1,hSigmapPbStat->GetBinContent(i+1)*yhigh/normhistohigh*triggercorrection);
+      hSigmapPbStat->SetBinError(i+1,hSigmapPbStat->GetBinError(i+1)*yhigh/normhistohigh*triggercorrection);
     }
     if(i>=7){
       hSigmapPbStat->SetBinContent(i+1,hSigmapPbStat->GetBinContent(i+1)*yhigh/normhistohigh);
