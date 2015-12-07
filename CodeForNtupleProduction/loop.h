@@ -673,9 +673,9 @@ void setHltTreeBranch(TTree* hltroot)
 }
 
 //hiEvtInfo
-Int_t           Df_HiTree_Run;
-Int_t           Df_HiTree_Evt;
-Int_t           Df_HiTree_Lumi;
+unsigned int       Df_HiTree_Run;
+unsigned long long Df_HiTree_Evt;
+unsigned int       Df_HiTree_Lumi;
 void setHiTreeBranch(TTree* hitreeroot)
 {
   hitreeroot->SetBranchAddress("run",&Df_HiTree_Run);
