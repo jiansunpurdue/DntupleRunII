@@ -3,7 +3,7 @@ using namespace std;
 
 Bool_t iseos = true;
 int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=100, Bool_t skim=false, Bool_t gskim=true)
+         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
