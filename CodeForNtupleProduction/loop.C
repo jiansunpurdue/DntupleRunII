@@ -3,7 +3,7 @@ using namespace std;
 
 Bool_t iseos = true;
 int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
-         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true)
+         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
@@ -76,15 +76,15 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
       skimroot->GetEntry(i);
       if(isPbPb) hiroot->GetEntry(i);
       if(i%100000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
-      if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo)
-	{
-	  if(!isPbPb||(isPbPb&&(Df_HiTree_Evt!=EvtInfo_EvtNo||Df_HiTree_Run!=EvtInfo_RunNo||Df_HiTree_Lumi!=EvtInfo_LumiNo)))
-	    {
-	      cout<<"Error: not matched "<<i<<" | ";
-	      cout<<Df_HLT_Event<<","<<EvtInfo_EvtNo<<"   "<<Df_HLT_Run<<","<<EvtInfo_RunNo<<"   "<<Df_HLT_LumiBlock<<","<<EvtInfo_LumiNo<<" | "<<Df_HiTree_Evt<<","<<EvtInfo_EvtNo<<"   "<<Df_HiTree_Run<<","<<EvtInfo_RunNo<<"   "<<Df_HiTree_Lumi<<","<<EvtInfo_LumiNo<<endl;
-	      continue;
-	    }
-	}
+      if(checkMatching)
+        {
+          if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&(Df_HiTree_Evt!=EvtInfo_EvtNo||Df_HiTree_Run!=EvtInfo_RunNo||Df_HiTree_Lumi!=EvtInfo_LumiNo)))
+            {
+              cout<<"Error: not matched "<<i<<" | ";
+              cout<<"EvtNo("<<Df_HLT_Event<<","<<EvtInfo_EvtNo<<") RunNo("<<Df_HLT_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Df_HLT_LumiBlock<<","<<EvtInfo_LumiNo<<") | EvtNo("<<Df_HiTree_Evt<<","<<EvtInfo_EvtNo<<") RunNo("<<Df_HiTree_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Df_HiTree_Lumi<<","<<EvtInfo_LumiNo<<")"<<endl;
+              continue;
+            }
+        }
       Int_t Dtypesize[3]={0,0,0};
       Int_t Ndbc=0;
       Int_t ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1;
