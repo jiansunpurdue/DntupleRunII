@@ -37,6 +37,7 @@ Int_t DSUBS_PDGID = 431;
 //EvtInfo
 Int_t      RunNo;
 Int_t      EvtNo;
+Int_t      LumiNo;
 Int_t      Bsize;
 Int_t      Dsize;
 Double_t   PVx;
@@ -196,6 +197,7 @@ void buildDBranch(TTree* dnt)
   //EvtInfo
   dnt->Branch("RunNo",&RunNo);
   dnt->Branch("EvtNo",&EvtNo);
+  dnt->Branch("LumiNo",&LumiNo);
   dnt->Branch("Dsize",&Dsize);
   dnt->Branch("PVx",&PVx);
   dnt->Branch("PVy",&PVy);

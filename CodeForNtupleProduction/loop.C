@@ -6,6 +6,7 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
          TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true, Bool_t checkMatching=true)
 {
   double findMass(Int_t particlePdgId);
+  void fillTreeEvt();
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
   bool isDsignalGen(Int_t Dtype, Int_t j);
 
@@ -23,8 +24,7 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
   TTree* root = (TTree*)f->Get("Dfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
   TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
-  TTree* hiroot;
-  if(isPbPb) hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
+  TTree* hiroot = (TTree*)f->Get("hiEvtAnalyzer/HiTree");
   setDBranch(root);
   setHltTreeBranch(hltroot);
   if(isPbPb) setHiTreeBranch(hiroot);
@@ -50,12 +50,8 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
   ntHlt->SetName("ntHlt");
   TTree* ntSkim = skimroot->CloneTree(0);
   ntSkim->SetName("ntSkim");
-  TTree* ntHi;
-  if(isPbPb)
-    {
-      ntHi = hiroot->CloneTree(0);
-      ntHi->SetName("ntHi");
-    }
+  TTree* ntHi = hiroot->CloneTree(0);
+  ntHi->SetName("ntHi");
   cout<<"--- Building trees finished"<<endl;
 
   //Int_t flagEvt=0 
@@ -78,13 +74,14 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
       if(i%100000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
       if(checkMatching)
         {
-          if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&(Df_HiTree_Evt!=EvtInfo_EvtNo||Df_HiTree_Run!=EvtInfo_RunNo||Df_HiTree_Lumi!=EvtInfo_LumiNo)))
+          if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||(Int_t)Df_HLT_Run!=EvtInfo_RunNo||(Int_t)Df_HLT_LumiBlock!=EvtInfo_LumiNo || (isPbPb&&((Int_t)Df_HiTree_Evt!=EvtInfo_EvtNo||(Int_t)Df_HiTree_Run!=EvtInfo_RunNo||(Int_t)Df_HiTree_Lumi!=EvtInfo_LumiNo)))
             {
               cout<<"Error: not matched "<<i<<" | ";
               cout<<"EvtNo("<<Df_HLT_Event<<","<<EvtInfo_EvtNo<<") RunNo("<<Df_HLT_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Df_HLT_LumiBlock<<","<<EvtInfo_LumiNo<<") | EvtNo("<<Df_HiTree_Evt<<","<<EvtInfo_EvtNo<<") RunNo("<<Df_HiTree_Run<<","<<EvtInfo_RunNo<<") LumiNo("<<Df_HiTree_Lumi<<","<<EvtInfo_LumiNo<<")"<<endl;
               continue;
             }
         }
+      fillTreeEvt();
       Int_t Dtypesize[3]={0,0,0};
       Int_t Ndbc=0;
       Int_t ptflag=-1,ptMatchedflag=-1,probflag=-1,probMatchedflag=-1;
@@ -213,12 +210,12 @@ double findMass(Int_t particlePdgId)
     }
 }
 
-void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL)
+void fillTreeEvt()
 {
-  //EvtInfo
+  //Event Info
   RunNo = EvtInfo_RunNo;
   EvtNo = EvtInfo_EvtNo;
-  Dsize = typesize+1;
+  LumiNo = EvtInfo_LumiNo;
   PVx = EvtInfo_PVx;
   PVy = EvtInfo_PVy;
   PVz = EvtInfo_PVz;
@@ -241,6 +238,12 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   BSWidthXErr = EvtInfo_BSWidthXErr;
   BSWidthY = EvtInfo_BSWidthY;
   BSWidthYErr = EvtInfo_BSWidthYErr;
+}
+
+void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL)
+{
+  //EvtInfo
+  Dsize = typesize+1;
 
   //DInfo
   bP->SetPtEtaPhi(DInfo_pt[j],DInfo_eta[j]*0,DInfo_phi[j]);
