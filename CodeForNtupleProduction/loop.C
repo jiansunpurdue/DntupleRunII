@@ -1,18 +1,25 @@
 #include "loop.h"
 using namespace std;
 
-int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velicanu/forest/Run2015E/HIMinimumBias2/Merged/HIForestExpress_run262620.root",
-         TString outfile="./ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=false, Int_t startEntries=0, Int_t endEntries=-1, Bool_t skim=false, Bool_t gskim=true)
+Bool_t iseos = true;
+int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/HIExpressPhysics/Merged/HIForestExpress_run262620-v6.root",
+         TString outfile="/data/wangj/Data2015/Dntuple/example/ntD_HIForestExpress_run262620.root", Bool_t REAL=true, Bool_t isPbPb=true, Int_t startEntries=0, Int_t endEntries=100, Bool_t skim=false, Bool_t gskim=true)
 {
   double findMass(Int_t particlePdgId);
   void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t typesize, Bool_t REAL);
   bool isDsignalGen(Int_t Dtype, Int_t j);
 
   cout<<endl;
-  if(REAL) cout<<"--- Processing - REAL DATA"<<endl;
-  else cout<<"--- Processing - MC"<<endl;
-  
-  TFile* f = TFile::Open(infile);
+  if(REAL) cout<<"--- Processing - REAL DATA";
+  else cout<<"--- Processing - MC";
+  if(isPbPb) cout<<" - PbPb";
+  else cout<<" - pp";
+  cout<<endl;
+
+  TString ifname;
+  if(iseos) ifname = Form("root://eoscms.cern.ch//eos/cms%s",infile.Data());
+  else ifname = infile;
+  TFile* f = TFile::Open(ifname);
   TTree* root = (TTree*)f->Get("Dfinder/root");
   TTree* hltroot = (TTree*)f->Get("hltanalysis/HltTree");
   TTree* skimroot = (TTree*)f->Get("skimanalysis/HltTree");
@@ -23,18 +30,16 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
   if(isPbPb) setHiTreeBranch(hiroot);
 
   Long64_t nentries = root->GetEntries();
-  if( endEntries > nentries )
-      endEntries = nentries;
-  if( endEntries == -1 )  endEntries = nentries;
+  if(endEntries>nentries || endEntries==-1) endEntries = nentries;
   TFile *outf = new TFile(Form("%s", outfile.Data()),"recreate");
 
   int isDchannel[6];
   isDchannel[0] = 1; //k+pi-
   isDchannel[1] = 1; //k-pi+
-  isDchannel[2] = 0; //k-pi+pi+
-  isDchannel[3] = 0; //k+pi-pi-
-  isDchannel[4] = 0; //k-pi-pi+pi+
-  isDchannel[5] = 0; //k+pi+pi-pi-
+  isDchannel[2] = 1; //k-pi+pi+
+  isDchannel[3] = 1; //k+pi-pi-
+  isDchannel[4] = 1; //k-pi-pi+pi+
+  isDchannel[5] = 1; //k+pi+pi-pi-
 
   cout<<"--- Building trees"<<endl;
   TTree* ntD1 = new TTree("ntDkpi","");       buildDBranch(ntD1);
@@ -46,7 +51,11 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
   TTree* ntSkim = skimroot->CloneTree(0);
   ntSkim->SetName("ntSkim");
   TTree* ntHi;
-  if(isPbPb) ntHi = hiroot->CloneTree(0);
+  if(isPbPb)
+    {
+      ntHi = hiroot->CloneTree(0);
+      ntHi->SetName("ntHi");
+    }
   cout<<"--- Building trees finished"<<endl;
 
   //Int_t flagEvt=0 
@@ -148,7 +157,7 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
 	}
 
       ntHlt->Fill();
-	  ntSkim->Fill();
+      ntSkim->Fill();
       if(isPbPb) ntHi->Fill();
 
       if(!REAL)
@@ -184,6 +193,11 @@ int loop(TString infile="root://eoscms//eos/cms/store/group/phys_heavyions/velic
   outf->Write();
   cout<<"--- Writing finished"<<endl;
   outf->Close();
+
+  cout<<"--- In/Output files"<<endl;
+  cout<<infile<<endl;
+  cout<<outfile<<endl;
+  cout<<endl;
 
   return 1;
 }
@@ -229,11 +243,11 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   BSWidthYErr = EvtInfo_BSWidthYErr;
 
   //DInfo
-  bP->SetXYZ(DInfo_px[j],DInfo_py[j],DInfo_pz[j]);
+  bP->SetPtEtaPhi(DInfo_pt[j],DInfo_eta[j]*0,DInfo_phi[j]);
   bVtx->SetXYZ(DInfo_vtxX[j]-EvtInfo_PVx,
 	       DInfo_vtxY[j]-EvtInfo_PVy,
-	       DInfo_vtxZ[j]-EvtInfo_PVz);
-  b4P->SetXYZM(DInfo_px[j],DInfo_py[j],DInfo_pz[j],DInfo_mass[j]);
+	       DInfo_vtxZ[j]*0-EvtInfo_PVz*0);
+  b4P->SetPtEtaPhiM(DInfo_pt[j],DInfo_eta[j],DInfo_phi[j],DInfo_mass[j]);
   Dindex[typesize] = typesize;
   Dtype[typesize] = DInfo_type[j];
   Dmass[typesize] = DInfo_mass[j];
@@ -250,7 +264,7 @@ void fillDTree(TVector3* bP, TVector3* bVtx, TLorentzVector* b4P, Int_t j, Int_t
   Dchi2ndf[typesize] = DInfo_vtxchi2[j]/DInfo_vtxdof[j];
   Dchi2cl[typesize] = TMath::Prob(DInfo_vtxchi2[j],DInfo_vtxdof[j]);
   Ddtheta[typesize] = bP->Angle(*bVtx);
-  Dlxy[typesize] = ((DInfo_vtxX[j]-EvtInfo_PVx)*DInfo_px[j] + (DInfo_vtxY[j]-EvtInfo_PVy)*DInfo_py[j])/DInfo_pt[j];
+  Dlxy[typesize] = ((DInfo_vtxX[j]-EvtInfo_PVx)*b4P->Px() + (DInfo_vtxY[j]-EvtInfo_PVy)*b4P->Py())/DInfo_pt[j];
   Dalpha[typesize] = DInfo_alpha[j];
   DsvpvDistance[typesize] = DInfo_svpvDistance[j];
   DsvpvDisErr[typesize] = DInfo_svpvDisErr[j];
