@@ -1,6 +1,6 @@
 #include "uti.h"
 
-void CrossSectionPlusRatio(TString particle="Dzero")
+void CrossSectionRatio(TString particle="Dzero")
 {
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -146,7 +146,7 @@ void CrossSectionPlusRatio(TString particle="Dzero")
   pRatio->Draw();
   pRatio->cd();
 
-  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,210,10.,0,3.4);  
+  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,210,10.,0.3,1.7);
   hemptyRatio->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyRatio->GetYaxis()->CenterTitle();
   hemptyRatio->GetYaxis()->SetTitle("Data / FONLL");
