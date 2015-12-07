@@ -73,9 +73,9 @@ int loop(TString infile="/store/group/phys_heavyions/velicanu/forest/HIRun2015/H
     {
       root->GetEntry(i);
       hltroot->GetEntry(i);
-	  skimroot->GetEntry(i);
+      skimroot->GetEntry(i);
       if(isPbPb) hiroot->GetEntry(i);
-      if(i%100000==0) cout<<setw(7)<<i<<" / "<<nentries<<endl;
+      if(i%100000==0) cout<<setw(7)<<i<<" / "<<(endEntries-startEntries)<<endl;
       if((Int_t)Df_HLT_Event!=EvtInfo_EvtNo||Df_HLT_Run!=EvtInfo_RunNo||Df_HLT_LumiBlock!=EvtInfo_LumiNo)
 	{
 	  if(!isPbPb||(isPbPb&&(Df_HiTree_Evt!=EvtInfo_EvtNo||Df_HiTree_Run!=EvtInfo_RunNo||Df_HiTree_Lumi!=EvtInfo_LumiNo)))
