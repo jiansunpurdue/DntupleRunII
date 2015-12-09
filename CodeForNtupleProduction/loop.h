@@ -37,6 +37,7 @@ Int_t DSUBS_PDGID = 431;
 //EvtInfo
 Int_t      RunNo;
 Int_t      EvtNo;
+Int_t      LumiNo;
 Int_t      Bsize;
 Int_t      Dsize;
 Double_t   PVx;
@@ -196,6 +197,7 @@ void buildDBranch(TTree* dnt)
   //EvtInfo
   dnt->Branch("RunNo",&RunNo);
   dnt->Branch("EvtNo",&EvtNo);
+  dnt->Branch("LumiNo",&LumiNo);
   dnt->Branch("Dsize",&Dsize);
   dnt->Branch("PVx",&PVx);
   dnt->Branch("PVy",&PVy);
@@ -443,9 +445,6 @@ Double_t        DInfo_tktkRes_mass[MAX_XB];
 Double_t        DInfo_tktkRes_pt[MAX_XB];
 Double_t        DInfo_tktkRes_eta[MAX_XB];
 Double_t        DInfo_tktkRes_phi[MAX_XB];
-Double_t        DInfo_tktkRes_px[MAX_XB];
-Double_t        DInfo_tktkRes_py[MAX_XB];
-Double_t        DInfo_tktkRes_pz[MAX_XB];
 Double_t        DInfo_tktkRes_vtxX[MAX_XB];
 Double_t        DInfo_tktkRes_vtxY[MAX_XB];
 Double_t        DInfo_tktkRes_vtxZ[MAX_XB];
@@ -464,9 +463,6 @@ Double_t        DInfo_mass[MAX_XB];
 Double_t        DInfo_pt[MAX_XB];
 Double_t        DInfo_eta[MAX_XB];
 Double_t        DInfo_phi[MAX_XB];
-Double_t        DInfo_px[MAX_XB];
-Double_t        DInfo_py[MAX_XB];
-Double_t        DInfo_pz[MAX_XB];
 Double_t        DInfo_alpha[MAX_XB];
 Double_t        DInfo_svpvDistance[MAX_XB];
 Double_t        DInfo_svpvDisErr[MAX_XB];
@@ -484,18 +480,6 @@ Double_t        DInfo_vtxZXErr[MAX_XB];
 Double_t        DInfo_vtxZYErr[MAX_XB];
 Double_t        DInfo_vtxdof[MAX_XB];
 Double_t        DInfo_vtxchi2[MAX_XB];
-Double_t        DInfo_rftk1_px[MAX_XB];
-Double_t        DInfo_rftk1_py[MAX_XB];
-Double_t        DInfo_rftk1_pz[MAX_XB];
-Double_t        DInfo_rftk2_px[MAX_XB];
-Double_t        DInfo_rftk2_py[MAX_XB];
-Double_t        DInfo_rftk2_pz[MAX_XB];
-Double_t        DInfo_rftk3_px[MAX_XB];
-Double_t        DInfo_rftk3_py[MAX_XB];
-Double_t        DInfo_rftk3_pz[MAX_XB];
-Double_t        DInfo_rftk4_px[MAX_XB];
-Double_t        DInfo_rftk4_py[MAX_XB];
-Double_t        DInfo_rftk4_pz[MAX_XB];
 Double_t        DInfo_rftk1_pt[MAX_XB];
 Double_t        DInfo_rftk1_eta[MAX_XB];
 Double_t        DInfo_rftk1_phi[MAX_XB];
@@ -604,9 +588,6 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("DInfo.tktkRes_pt",DInfo_tktkRes_pt);
   root->SetBranchAddress("DInfo.tktkRes_eta",DInfo_tktkRes_eta);
   root->SetBranchAddress("DInfo.tktkRes_phi",DInfo_tktkRes_phi);
-  root->SetBranchAddress("DInfo.tktkRes_px",DInfo_tktkRes_px);
-  root->SetBranchAddress("DInfo.tktkRes_py",DInfo_tktkRes_py);
-  root->SetBranchAddress("DInfo.tktkRes_pz",DInfo_tktkRes_pz);
   root->SetBranchAddress("DInfo.tktkRes_vtxX",DInfo_tktkRes_vtxX);
   root->SetBranchAddress("DInfo.tktkRes_vtxY",DInfo_tktkRes_vtxY);
   root->SetBranchAddress("DInfo.tktkRes_vtxZ",DInfo_tktkRes_vtxZ);
@@ -625,9 +606,6 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("DInfo.pt",DInfo_pt);
   root->SetBranchAddress("DInfo.eta",DInfo_eta);
   root->SetBranchAddress("DInfo.phi",DInfo_phi);
-  root->SetBranchAddress("DInfo.px",DInfo_px);
-  root->SetBranchAddress("DInfo.py",DInfo_py);
-  root->SetBranchAddress("DInfo.pz",DInfo_pz);
   root->SetBranchAddress("DInfo.alpha",DInfo_alpha);
   root->SetBranchAddress("DInfo.svpvDistance",DInfo_svpvDistance);
   root->SetBranchAddress("DInfo.svpvDisErr",DInfo_svpvDisErr);
@@ -645,18 +623,6 @@ void setDBranch(TTree *root)
   root->SetBranchAddress("DInfo.vtxZYErr",DInfo_vtxZYErr);
   root->SetBranchAddress("DInfo.vtxdof",DInfo_vtxdof);
   root->SetBranchAddress("DInfo.vtxchi2",DInfo_vtxchi2);
-  root->SetBranchAddress("DInfo.rftk1_px",DInfo_rftk1_px);
-  root->SetBranchAddress("DInfo.rftk1_py",DInfo_rftk1_py);
-  root->SetBranchAddress("DInfo.rftk1_pz",DInfo_rftk1_pz);
-  root->SetBranchAddress("DInfo.rftk2_px",DInfo_rftk2_px);
-  root->SetBranchAddress("DInfo.rftk2_py",DInfo_rftk2_py);
-  root->SetBranchAddress("DInfo.rftk2_pz",DInfo_rftk2_pz);
-  root->SetBranchAddress("DInfo.rftk3_px",DInfo_rftk3_px);
-  root->SetBranchAddress("DInfo.rftk3_py",DInfo_rftk3_py);
-  root->SetBranchAddress("DInfo.rftk3_pz",DInfo_rftk3_pz);
-  root->SetBranchAddress("DInfo.rftk4_px",DInfo_rftk4_px);
-  root->SetBranchAddress("DInfo.rftk4_py",DInfo_rftk4_py);
-  root->SetBranchAddress("DInfo.rftk4_pz",DInfo_rftk4_pz);
   root->SetBranchAddress("DInfo.rftk1_pt",DInfo_rftk1_pt);
   root->SetBranchAddress("DInfo.rftk1_eta",DInfo_rftk1_eta);
   root->SetBranchAddress("DInfo.rftk1_phi",DInfo_rftk1_phi);
@@ -707,9 +673,9 @@ void setHltTreeBranch(TTree* hltroot)
 }
 
 //hiEvtInfo
-Int_t           Df_HiTree_Run;
-Int_t           Df_HiTree_Evt;
-Int_t           Df_HiTree_Lumi;
+unsigned int       Df_HiTree_Run;
+unsigned long long Df_HiTree_Evt;
+unsigned int       Df_HiTree_Lumi;
 void setHiTreeBranch(TTree* hitreeroot)
 {
   hitreeroot->SetBranchAddress("run",&Df_HiTree_Run);
