@@ -14,8 +14,8 @@ void fitDstar(char *infname = "/data/wangj/Data2015/Dntuple/ntD_DfinderData_pp_2
    TCut cutTrk = "";//"trk1PixelHit>=2&&trk1StripHit>=10&&trk1Chi2ndf<5&&trk2PixelHit>=2&&trk2StripHit>=10&&trk2Chi2ndf<5";
    
    TCanvas *c = new TCanvas("c","",750,750);
-  
-   ntmix->Draw("Dmass-DtktkResmass>>h","abs(DtktkResmass-1.86486)<0.015&&Dpt>10"&&cutTrk,"",10000000);
+  // ntmix->Draw("Dmass-DtktkResmass>>h","abs(DtktkResmass-1.86486)<0.015&&Dpt>10"&&cutTrk,"",10000000); 
+   ntmix->Draw("Dmass-DtktkResmass>>h","abs(DtktkResmass-1.86486)<0.015&&Dpt>10&&Dtrk1Pt>0.5&&DRestrk1Pt>0.5&&DRestrk2Pt>0.5&&DRestrk3Pt>0.5&&DRestrk4Pt>0.5&&Dchi2cl>0.1&&Dalpha<0.2&&(DsvpvDistance/DsvpvDisErr)>.0"&&cutTrk,"",10000000);
    h->Sumw2();
    //   TF1 *f = new TF1("f","(1-exp(-(x-[8])/[0]))*(((x)/[8])**[1]+[2]*(((x)/[8])-1))*[3]+[4]*(TMath::Voigt(x-[5],[6],[7]))");
    TF1 *f = new TF1("f","[0]+[1]*x+[2]*x*x+[3]*x*x*x+[4]*x*x*x*x+[5]*((1-[8])*TMath::Gaus(x,[6],[7])+[8]*TMath::Gaus(x,[6],[9]))");
