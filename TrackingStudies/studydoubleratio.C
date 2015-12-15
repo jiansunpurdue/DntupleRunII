@@ -53,8 +53,8 @@ void studydoubleratio(TString label="", Bool_t doweight=true)
   {    
     TF1* fMC3prong = fitDstar3prongs(ntMC3prong,ntMC3prong,ptBins[i],ptBins[i+1]);
     TF1* fMC5prong = fitDstar5prongs(ntMC5prong,ntMC5prong,ptBins[i],ptBins[i+1]);
-    TF1* fData3prong = fitDstar3prongs(ntData3prong,ntMC3prong,ptBins[i],ptBins[i+1]);
-    TF1* fData5prong = fitDstar5prongs(ntData5prong,ntMC5prong,ptBins[i],ptBins[i+1]);
+    TF1* fData3prong = fitDstar3prongs(ntData3prong,ntData3prong,ptBins[i],ptBins[i+1]);
+    TF1* fData5prong = fitDstar5prongs(ntData5prong,ntData5prong,ptBins[i],ptBins[i+1]);
 
     double yieldMC3prong = fMC3prong->Integral(minmass3prong,maxmass3prong)/binwidth3prong;
     double yieldMC3prongErr = fMC3prong->Integral(minmass3prong,maxmass3prong)/binwidth3prong*fMC3prong->GetParError(0)/fMC3prong->GetParameter(0);
@@ -74,13 +74,24 @@ void studydoubleratio(TString label="", Bool_t doweight=true)
     hPtData5prong->SetBinContent(i+1,yieldData5prong/(ptBins[i+1]-ptBins[i]));
     hPtData5prong->SetBinError(i+1,yieldData5prongErr/(ptBins[i+1]-ptBins[i]));
   }
-
+  
+  TH1D* hRatio3prong=(TH1D*)hPtData3prong->Clone("hRatio3prong");
+  hRatio3prong->Divide(hPtMC3prong);
+  TH1D* hRatio5prong=(TH1D*)hPtData5prong->Clone("hRatio5prong");
+  hRatio5prong->Divide(hPtMC5prong);
+  TH1D* h5prongover3prong=(TH1D*)hRatio5prong->Clone("h5prongover3prong");
+  h5prongover3prong->Divide(hRatio3prong);
+  
+  
   TFile *outputfile=new TFile("outputfile.root","recreate");
   outputfile->cd();
   hPtMC3prong->Write();
   hPtMC5prong->Write();
   hPtData3prong->Write();
   hPtData5prong->Write();
+  hRatio3prong->Write();
+  hRatio5prong->Write();
+  h5prongover3prong->Write();
   outputfile->Close();
 }
 
