@@ -9,10 +9,69 @@ double maxmass3prong=0.155;
 double minmass5prong=0.142;
 double maxmass5prong=0.155;
 
-TString infnameData = "/data/wangj/Data2015/Dntuple/ntD_DfinderData_pp_20151209_dPt5tkPt1_D0DsDstar3p5p.root";
+TString infnameData = "/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root";
 TString infnameMC = "/data/wangj/MC2015/Dntuple/PbPb/ntD_Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120_Dstar5p_tkPt2_20151126_Evt_All.root";
+TString outputfilename = "outputfile.root";
 
-const int nBins=1;  Double_t ptBins[nBins+1]={10.,200.};
+
+const int nBins=6;  Double_t ptBins[nBins+1]={10.,15.,20.,25.,30.,35.,50.};
+
+
+void plotter(TString mystring="Data"){
+ 
+  TFile *outputfile=new TFile(outputfilename.Data());
+  TH1D*hPt3prong=(TH1D*)outputfile->Get(Form("hPt%s3prong",mystring.Data()));
+  TH1D*hPt5prong=(TH1D*)outputfile->Get(Form("hPt%s5prong",mystring.Data()));
+  TH1D*hRatio=(TH1D*)outputfile->Get(Form("hRatio%s",mystring.Data()));
+  
+  TH1D*hPt3prongRelErr=(TH1D*)hPt3prong->Clone(Form("hPt%s3prongRelErr",mystring.Data()));
+  TH1D*hPt5prongRelErr=(TH1D*)hPt5prong->Clone(Form("hPt%s5prongRelErr",mystring.Data()));
+  TH1D*hRatioRelErr=(TH1D*)hRatio->Clone(Form("hRatio%sRelErr",mystring.Data()));
+
+  for (int i=1;i<hPt3prongRelErr->GetNbinsX()+1;i++){
+    hPt3prongRelErr->SetBinContent(i,hPt3prongRelErr->GetBinError(i)/hPt3prongRelErr->GetBinContent(i));
+    hPt5prongRelErr->SetBinContent(i,hPt5prongRelErr->GetBinError(i)/hPt5prongRelErr->GetBinContent(i));
+    hRatioRelErr->SetBinContent(i,hRatioRelErr->GetBinError(i)/hRatioRelErr->GetBinContent(i));  
+    hPt3prongRelErr->SetBinError(i,0.0001);
+    hPt5prongRelErr->SetBinError(i,0.0001);
+    hRatioRelErr->SetBinError(i,0.0001);
+  }
+  
+  TCanvas* cRatio = new TCanvas("cRatio","",1200,800);
+  cRatio->Divide(3,2);
+  cRatio->cd(1);
+  hPt3prong->SetXTitle("D meson p_{T}");
+  hPt3prong->SetYTitle(Form("Raw fit signal %s 3 prong",mystring.Data()));
+  hPt3prong->Draw();  
+  cRatio->cd(2);
+  hPt5prong->SetXTitle("D meson p_{T}");
+  hPt5prong->SetYTitle(Form("Raw fit signal %s 3 prong",mystring.Data()));
+  hPt5prong->Draw();  
+  cRatio->cd(3);
+  hRatio->SetXTitle("D meson p_{T}");
+  hRatio->SetYTitle(Form("Ratio Raw fit signal %s 5/3 prong",mystring.Data()));
+  hRatio->Draw();
+  cRatio->SaveAs("cRatio.pdf");
+  cRatio->cd(4);
+  hPt3prongRelErr->GetYaxis()->SetTitleOffset(1.6);
+  hPt3prongRelErr->SetXTitle("D meson p_{T}");
+  hPt3prongRelErr->SetYTitle(Form("Rel err.  signal %s 3 prong",mystring.Data()));
+  hPt3prongRelErr->Draw();  
+  cRatio->cd(5);
+  hPt5prongRelErr->GetYaxis()->SetTitleOffset(1.6);
+  hPt5prongRelErr->SetXTitle("D meson p_{T}");
+  hPt5prongRelErr->SetYTitle(Form("Rel err. signal %s 3 prong",mystring.Data()));
+  hPt5prongRelErr->Draw();  
+  cRatio->cd(6);
+  hRatioRelErr->GetYaxis()->SetTitleOffset(1.6);
+  hRatioRelErr->SetXTitle("D meson p_{T}");
+  hRatioRelErr->SetYTitle(Form("Rel err. Ratio %s 5/3 prong",mystring.Data()));
+  hRatioRelErr->Draw();
+  cRatio->SaveAs("cRatio.pdf");
+
+}
+
+
 
 void studydoubleratio(TString label="", Bool_t doweight=true)
 {
@@ -26,8 +85,8 @@ void studydoubleratio(TString label="", Bool_t doweight=true)
   gStyle->SetTitleX(.0f);
   */
   void clean0 (TH1D* h);  
-  TF1* fitDstar3prongs (TTree* nt, TTree* ntMC, double ptmin, double ptmax);
-  TF1* fitDstar5prongs (TTree* nt, TTree* ntMC, double ptmin, double ptmax);
+  TF1* fitDstar3prongs (TTree* nt, TTree* ntMC, double ptmin, double ptmax, bool isData);
+  TF1* fitDstar5prongs (TTree* nt, TTree* ntMC, double ptmin, double ptmax, bool isData);
 
   TFile* infData = new TFile(infnameData.Data());
   TFile* infMC = new TFile(infnameMC.Data());
@@ -48,50 +107,55 @@ void studydoubleratio(TString label="", Bool_t doweight=true)
   TH1D* hPtMC5prong = new TH1D("hPtMC5prong","",nBins,ptBins);
   TH1D* hPtData3prong = new TH1D("hPtData3prong","",nBins,ptBins);
   TH1D* hPtData5prong = new TH1D("hPtData5prong","",nBins,ptBins);
+  
+  
+  hPtMC3prong->Sumw2();
+  hPtMC5prong->Sumw2();
+  hPtData3prong->Sumw2();
+  hPtData5prong->Sumw2();
 
   for(int i=0;i<nBins;i++)
   {    
-    TF1* fMC3prong = fitDstar3prongs(ntMC3prong,ntMC3prong,ptBins[i],ptBins[i+1]);
-    TF1* fMC5prong = fitDstar5prongs(ntMC5prong,ntMC5prong,ptBins[i],ptBins[i+1]);
-    TF1* fData3prong = fitDstar3prongs(ntData3prong,ntData3prong,ptBins[i],ptBins[i+1]);
-    TF1* fData5prong = fitDstar5prongs(ntData5prong,ntData5prong,ptBins[i],ptBins[i+1]);
-
+    //TF1* fMC3prong = fitDstar3prongs(ntMC3prong,ntMC3prong,ptBins[i],ptBins[i+1],false);
+    //TF1* fMC5prong = fitDstar5prongs(ntMC5prong,ntMC5prong,ptBins[i],ptBins[i+1],false);
+    TF1* fData3prong = fitDstar3prongs(ntData3prong,ntData3prong,ptBins[i],ptBins[i+1],true);
+    TF1* fData5prong = fitDstar5prongs(ntData5prong,ntData5prong,ptBins[i],ptBins[i+1],true);
+/*
     double yieldMC3prong = fMC3prong->Integral(minmass3prong,maxmass3prong)/binwidth3prong;
     double yieldMC3prongErr = fMC3prong->Integral(minmass3prong,maxmass3prong)/binwidth3prong*fMC3prong->GetParError(0)/fMC3prong->GetParameter(0);
-    double yieldData3prong = fData3prong->Integral(minmass3prong,maxmass3prong)/binwidth3prong;
-    double yieldData3prongErr = fData3prong->Integral(minmass3prong,maxmass3prong)/binwidth3prong*fData3prong->GetParError(0)/fData3prong->GetParameter(0);
     double yieldMC5prong = fMC5prong->Integral(minmass5prong,maxmass5prong)/binwidth5prong;
     double yieldMC5prongErr = fMC5prong->Integral(minmass5prong,maxmass5prong)/binwidth5prong*fMC5prong->GetParError(0)/fMC5prong->GetParameter(0);
+*/
+    double yieldData3prong = fData3prong->Integral(minmass3prong,maxmass3prong)/binwidth3prong;
+    double yieldData3prongErr = fData3prong->Integral(minmass3prong,maxmass3prong)/binwidth3prong*fData3prong->GetParError(0)/fData3prong->GetParameter(0);
     double yieldData5prong = fData5prong->Integral(minmass5prong,maxmass5prong)/binwidth5prong;
     double yieldData5prongErr = fData5prong->Integral(minmass5prong,maxmass5prong)/binwidth5prong*fData5prong->GetParError(0)/fData5prong->GetParameter(0);
 
+/*
     hPtMC3prong->SetBinContent(i+1,yieldMC3prong/(ptBins[i+1]-ptBins[i]));
     hPtMC3prong->SetBinError(i+1,yieldMC3prongErr/(ptBins[i+1]-ptBins[i]));
-    hPtMC5prong->SetBinContent(i+1,yieldData3prong/(ptBins[i+1]-ptBins[i]));
-    hPtMC5prong->SetBinError(i+1,yieldData3prongErr/(ptBins[i+1]-ptBins[i]));
-    hPtData3prong->SetBinContent(i+1,yieldMC5prong/(ptBins[i+1]-ptBins[i]));
-    hPtData3prong->SetBinError(i+1,yieldMC5prongErr/(ptBins[i+1]-ptBins[i]));
+    hPtMC5prong->SetBinContent(i+1,yieldMC5prong/(ptBins[i+1]-ptBins[i]));
+    hPtMC5prong->SetBinError(i+1,yieldMC5prongErr/(ptBins[i+1]-ptBins[i]));
+    */
+    hPtData3prong->SetBinContent(i+1,yieldData3prong/(ptBins[i+1]-ptBins[i]));
+    hPtData3prong->SetBinError(i+1,yieldData3prongErr/(ptBins[i+1]-ptBins[i]));
     hPtData5prong->SetBinContent(i+1,yieldData5prong/(ptBins[i+1]-ptBins[i]));
     hPtData5prong->SetBinError(i+1,yieldData5prongErr/(ptBins[i+1]-ptBins[i]));
   }
   
-  TH1D* hRatio3prong=(TH1D*)hPtData3prong->Clone("hRatio3prong");
-  hRatio3prong->Divide(hPtMC3prong);
-  TH1D* hRatio5prong=(TH1D*)hPtData5prong->Clone("hRatio5prong");
-  hRatio5prong->Divide(hPtMC5prong);
-  TH1D* h5prongover3prong=(TH1D*)hRatio5prong->Clone("h5prongover3prong");
-  h5prongover3prong->Divide(hRatio3prong);
+  TH1D* hRatioData=(TH1D*)hPtData5prong->Clone("hRatioData");
+  hRatioData->Divide(hPtData3prong);
+  //TH1D* hRatioMC=(TH1D*)hPtMC5prong->Clone("hRatioMC");
+  //hRatioMC->Divide(hPtMC3prong);
   
-  
-  TFile *outputfile=new TFile("outputfile.root","recreate");
+  TFile *outputfile=new TFile(outputfilename.Data(),"recreate");
   outputfile->cd();
-  hPtMC3prong->Write();
-  hPtMC5prong->Write();
+  //hPtMC3prong->Write();
+  //hPtMC5prong->Write();
   hPtData3prong->Write();
   hPtData5prong->Write();
-  hRatio3prong->Write();
-  hRatio5prong->Write();
-  h5prongover3prong->Write();
+  hRatioData->Write();
+  //hRatioMC->Write();
   outputfile->Close();
 }
 
@@ -103,7 +167,7 @@ void clean0(TH1D* h)
   }
 }
 
-TF1* fitDstar3prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
+TF1* fitDstar3prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax, bool isData)
 {
 
   TString seldata="abs(DtktkResmass-1.86486)<0.015&&Dpt>10.";
@@ -189,7 +253,8 @@ TF1* fitDstar3prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   
   //TH1F* histo_copy_nofitfun = (TH1F*)h->Clone("histo_copy_nofitfun");
   //histo_copy_nofitfun->Draw("esame");
-  c->SaveAs(Form("DMass_3prongs-%d.pdf",count3p));
+ if (isData) c->SaveAs(Form("DMass_3prongsData-%d.pdf",count3p));
+ else c->SaveAs(Form("DMass_3prongsMC-%d.pdf",count3p));
 
   //h->GetFunction(Form("f%d",count3p))->Delete();
   //delete h;
@@ -197,7 +262,7 @@ TF1* fitDstar3prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
 }
 
 
-TF1* fitDstar5prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
+TF1* fitDstar5prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax,bool isData)
 {
   TString seldata="abs(DtktkResmass-1.86486)<0.015&&Dpt>10.";
   //TString seldata="abs(DtktkResmass-1.86486)<0.015&&Dpt>10.&&Dtrk1Pt>2.&&DRestrk1Pt>2.&&DRestrk2Pt>2.&&DRestrk3Pt>2.&&DRestrk4Pt>2.";
@@ -285,7 +350,8 @@ TF1* fitDstar5prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   //TH1F* histo_copy_nofitfun = ( TH1F * ) h->Clone("histo_copy_nofitfun");
   //histo_copy_nofitfun->Draw("esame");
   
-  c->SaveAs(Form("DMass_5prongs-%d.pdf",count5p));
+ if (isData) c->SaveAs(Form("DMass_5prongsData-%d.pdf",count5p));
+ else c->SaveAs(Form("DMass_5prongsMC-%d.pdf",count5p));
   
   //h->GetFunction(Form("f%d",count5p))->Delete();
   //delete h;
