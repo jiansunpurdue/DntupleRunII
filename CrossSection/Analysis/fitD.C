@@ -39,7 +39,7 @@ void fitD(TString infname="", TString label="", Bool_t doweight=true)
 
   TString inputmc = "/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root";
   TString inputdata;
-  if(!isMC) inputdata = "/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root";
+  if(!isMC) inputdata = "/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/DfinderData_PbPb_20151220_dPt10tkPt2p5_D0Dstar3p5p_hltfix/merged_ntuple.root";
   else inputdata = "/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root";
 
   void clean0 (TH1D* h);

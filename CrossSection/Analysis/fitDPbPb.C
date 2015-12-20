@@ -1,11 +1,11 @@
 #include "uti.h"
 
-Double_t luminosity=9.97; //lumi estimated for RunNo==262271||RunNo==262272||RunNo==262273||RunNo==262274
+Double_t luminosity=9.5*1e-6; // 9.5/mub from /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/HI/Cert_262548-262735_PromptReco_HICollisions15_JSON.txt
 Double_t BRchain=0.0388;
 
 Double_t setparam0=100.;
 Double_t setparam1=1.865;
-Double_t setparam2=0.03;
+Double_t setparam2=0.03; 
 Double_t setparam10=0.005;
 Double_t setparam8=0.1;
 Double_t setparam9=0.1;
@@ -20,8 +20,8 @@ TString ptcut0 = "((Dpt<20&&(DsvpvDistance/DsvpvDisErr)>4.50&&Dchi2cl>0.2&&Dalph
 TString cut0 = Form("%s&&%s",cmcut.Data(),ptcut0.Data());
 TString selmcgen = Form("(GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1)");
 //TString ptcut1 = "Dalpha<0.12&&((Dpt>1.0&&Dpt<3.5&&(DsvpvDistance/DsvpvDisErr)>5.90&&Dchi2cl>0.248) || (Dpt>3.5&&Dpt<4.5&&(DsvpvDistance/DsvpvDisErr)>5.81&&Dchi2cl>0.200) || (Dpt>4.5&&Dpt<5.5&&(DsvpvDistance/DsvpvDisErr)>5.10&&Dchi2cl>0.191) || (Dpt>5.5&&Dpt<7.0&&(DsvpvDistance/DsvpvDisErr)>4.62&&Dchi2cl>0.148) || (Dpt>7.0&&Dpt<9.0&&(DsvpvDistance/DsvpvDisErr)>4.46&&Dchi2cl>0.102) || (Dpt>9.0&&Dpt<11.&&(DsvpvDistance/DsvpvDisErr)>4.39&&Dchi2cl>0.080) || (Dpt>11.&&Dpt<13.&&(DsvpvDistance/DsvpvDisErr)>4.07&&Dchi2cl>0.073) || (Dpt>13.&&Dpt<16.&&(DsvpvDistance/DsvpvDisErr)>3.88&&Dchi2cl>0.060) || (Dpt>16.&&Dpt<20.&&(DsvpvDistance/DsvpvDisErr)>3.67&&Dchi2cl>0.055) || (Dpt>20.&&Dpt<28.&&(DsvpvDistance/DsvpvDisErr)>3.25&&Dchi2cl>0.054) || (Dpt>28.&&Dpt<40.&&(DsvpvDistance/DsvpvDisErr)>2.55&&Dchi2cl>0.043))";
-TString trgselection = "1";
-//TString trgselection = "HLT_HIDmesonHITrackingGlobal_Dpt20_v1";
+//TString trgselection = "1";
+TString trgselection = "HLT_HIDmesonHITrackingGlobal_Dpt40_v1";
 
 TString cut = cut0;
 TString seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
@@ -41,7 +41,7 @@ void fitDPbPb(TString infname="", TString label="", Bool_t doweight=true)
 
   TString inputmc = "/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root";
   TString inputdata;
-  if(!isMC) inputdata = "/data/dmeson2015/PbPbNtuple/ntuple_HIRun2015HIHardProbesAOD12062015/ntuple_merged.root";
+  if(!isMC) inputdata = "/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/DfinderData_PbPb_20151220_dPt10tkPt2p5_D0Dstar3p5p_hltfix/merged_ntuple.root";
   else inputdata = "/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root";
 
   void clean0 (TH1D* h);
