@@ -12,7 +12,8 @@ double maxmass5prong=0.155;
 TString infnameData = "/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root";
 TString infnameMC = "/data/wangj/MC2015/Dntuple/PbPb/ntD_Pythia8_5020GeV_DstarD0kpipipi_755patch3_GEN_SIM_PU_20151120_Dstar5p_tkPt2_20151126_Evt_All.root";
 TString outputfilename = "outputfile.root";
-
+//TString triggerselection="(HLT_AK4CaloJet40_Eta5p1_v1||HLT_AK4CaloJet60_Eta5p1_v1||HLT_AK4CaloJet80_Eta5p1_v1)";
+TString triggerselection="(1)";
 
 const int nBins=6;  Double_t ptBins[nBins+1]={10.,15.,20.,25.,30.,35.,50.};
 
@@ -170,7 +171,7 @@ void clean0(TH1D* h)
 TF1* fitDstar3prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax, bool isData)
 {
 
-  TString seldata="abs(DtktkResmass-1.86486)<0.015&&Dpt>10.";
+  TString seldata=Form("abs(DtktkResmass-1.86486)<0.015&&Dpt>10.&&%s",triggerselection.Data());
   static int count3p=0;
   count3p++;
   
@@ -264,7 +265,7 @@ TF1* fitDstar3prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax, boo
 
 TF1* fitDstar5prongs(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax,bool isData)
 {
-  TString seldata="abs(DtktkResmass-1.86486)<0.015&&Dpt>10.";
+  TString seldata=Form("abs(DtktkResmass-1.86486)<0.015&&Dpt>10.&&%s",triggerselection.Data());
   //TString seldata="abs(DtktkResmass-1.86486)<0.015&&Dpt>10.&&Dtrk1Pt>2.&&DRestrk1Pt>2.&&DRestrk2Pt>2.&&DRestrk3Pt>2.&&DRestrk4Pt>2.";
   static int count5p=0;
   count5p++;
