@@ -1,6 +1,6 @@
 #include "uti.h"
 
-void CrossSectionRatio(TString particle="Dzero")
+void CrossSectionRatio(TString particle="Dzero", bool isluminormalised=true)
 {
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -22,6 +22,14 @@ void CrossSectionRatio(TString particle="Dzero")
   double normhistolow = hSigmapPbStat->GetBinContent(4);
   double normhistohigh = hSigmapPbStat->GetBinContent(9);
   double triggercorrection = 1108.61/56.053;
+  
+  if (isluminormalised){
+    normhistolow=1.;
+    normhistohigh=1.;
+    luminosity=1.;
+    yhigh=1;
+    ylow=1;
+  }  
 
   Double_t xr[15], yr[15], xrlow[15], yrlow[15],xrhigh[15],yrhigh[15];
   Double_t yf[15], yflow[15],yfhigh[15];
@@ -146,7 +154,7 @@ void CrossSectionRatio(TString particle="Dzero")
   pRatio->Draw();
   pRatio->cd();
 
-  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,210,10.,0.3,1.7);
+  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,210,10.,0.,3.0);
   hemptyRatio->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyRatio->GetYaxis()->CenterTitle();
   hemptyRatio->GetYaxis()->SetTitle("Data / FONLL");
