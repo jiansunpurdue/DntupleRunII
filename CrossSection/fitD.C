@@ -1,36 +1,29 @@
 #include "uti.h"
-
-Double_t luminosity=9.5*1e-6; // 9.5/mub from /afs/cern.ch/cms/CAF/CMSCOMM/COMM_DQM/certification/Collisions15/HI/Cert_262548-262735_PromptReco_HICollisions15_JSON.txt
-Double_t BRchain=0.0388;
+#include "parameters.h"
 
 Double_t setparam0=100.;
 Double_t setparam1=1.865;
-Double_t setparam2=0.03; 
+Double_t setparam2=0.03;
 Double_t setparam10=0.005;
 Double_t setparam8=0.1;
 Double_t setparam9=0.1;
 Double_t fixparam1=1.865;
+Double_t minhisto=	1.7;
+Double_t maxhisto=2.0;
+Double_t nbinsmasshisto=60;
+Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
-Bool_t isMC = false;
 TString weight = "1";
+TString seldata;
+TString selmc;
+TString collisionsystem;
 
-TString cmcut = "Dy>-1.&&Dy<1.";
-//TString ptcut0 = "(Dpt<20&&(DsvpvDistance/DsvpvDisErr)>4.50&&Dchi2cl>0.2&&Dalpha<0.10)||(Dpt>20&&Dpt<40&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.2&&Dalpha<0.12)||(Dpt>40&&(DsvpvDistance/DsvpvDisErr)>2.5&&Dchi2cl>0.05&&Dalpha<0.12)";
-TString ptcut0 = "(Dtrk1Pt>8.5&&Dtrk2Pt>8.5)&&((Dpt<20&&(DsvpvDistance/DsvpvDisErr)>4.50&&Dchi2cl>0.05&&Dalpha<0.12)||(Dpt>20&&Dpt<40&&(DsvpvDistance/DsvpvDisErr)>2.5&&Dchi2cl>0.2&&Dalpha<0.12)||(Dpt>40&&(DsvpvDistance/DsvpvDisErr)>2.5&&Dchi2cl>0.05&&Dalpha<0.12))";
-TString cut0 = Form("%s&&%s",cmcut.Data(),ptcut0.Data());
-TString selmcgen = Form("(GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1)");
-//TString ptcut1 = "Dalpha<0.12&&((Dpt>1.0&&Dpt<3.5&&(DsvpvDistance/DsvpvDisErr)>5.90&&Dchi2cl>0.248) || (Dpt>3.5&&Dpt<4.5&&(DsvpvDistance/DsvpvDisErr)>5.81&&Dchi2cl>0.200) || (Dpt>4.5&&Dpt<5.5&&(DsvpvDistance/DsvpvDisErr)>5.10&&Dchi2cl>0.191) || (Dpt>5.5&&Dpt<7.0&&(DsvpvDistance/DsvpvDisErr)>4.62&&Dchi2cl>0.148) || (Dpt>7.0&&Dpt<9.0&&(DsvpvDistance/DsvpvDisErr)>4.46&&Dchi2cl>0.102) || (Dpt>9.0&&Dpt<11.&&(DsvpvDistance/DsvpvDisErr)>4.39&&Dchi2cl>0.080) || (Dpt>11.&&Dpt<13.&&(DsvpvDistance/DsvpvDisErr)>4.07&&Dchi2cl>0.073) || (Dpt>13.&&Dpt<16.&&(DsvpvDistance/DsvpvDisErr)>3.88&&Dchi2cl>0.060) || (Dpt>16.&&Dpt<20.&&(DsvpvDistance/DsvpvDisErr)>3.67&&Dchi2cl>0.055) || (Dpt>20.&&Dpt<28.&&(DsvpvDistance/DsvpvDisErr)>3.25&&Dchi2cl>0.054) || (Dpt>28.&&Dpt<40.&&(DsvpvDistance/DsvpvDisErr)>2.55&&Dchi2cl>0.043))";
-//TString trgselection = "1";
-TString trgselection = "HLT_HIDmesonHITrackingGlobal_Dpt60_v1";
-
-TString cut = cut0;
-TString seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
-TString selmc = Form("%s",cut.Data());
-
-const int nBins=1; Int_t binsIndex=1;  Double_t ptBins[nBins+1]={60.,100.};
-
-void fitDPbPb(TString infname="", TString label="", Bool_t doweight=true)
+void fitD(TString inputdata, TString inputmc, TString trgselection,  TString cut, TString selmcgen, int isMC, Double_t luminosity, int doweight, TString collsyst, TString outputfile)
 {
+  collisionsystem=collsyst;
+  seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
+  selmc = Form("%s",cut.Data());
+
   gStyle->SetTextSize(0.05);
   gStyle->SetTextFont(42);
   gStyle->SetPadRightMargin(0.043);
@@ -39,17 +32,11 @@ void fitDPbPb(TString infname="", TString label="", Bool_t doweight=true)
   gStyle->SetPadBottomMargin(0.145);
   gStyle->SetTitleX(.0f);
 
-  TString inputmc = "/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root";
-  TString inputdata;
-  if(!isMC) inputdata = "/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/DfinderData_PbPb_20151220_dPt10tkPt2p5_D0Dstar3p5p_hltfix/merged_ntuple.root";
-  else inputdata = "/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root";
-
   void clean0 (TH1D* h);
   TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax);
 
   if(!doweight) weight="1";
-  if(infname=="") infname=inputdata.Data();
-  TFile* inf = new TFile(infname.Data());
+  TFile* inf = new TFile(inputdata.Data());
   TFile* infMC = new TFile(inputmc.Data());
 
   TTree* nt = (TTree*) inf->Get("ntDkpi");
@@ -72,8 +59,8 @@ void fitDPbPb(TString infname="", TString label="", Bool_t doweight=true)
   for(int i=0;i<nBins;i++)
     {
       TF1* f = fit(nt,ntMC,ptBins[i],ptBins[i+1]);
-      double yield = f->Integral(1.7,2.0)/0.005;
-      double yieldErr = f->Integral(1.7,2.0)/0.005*f->GetParError(0)/f->GetParameter(0);
+      double yield = f->Integral(minhisto,maxhisto)/binwidthmass;
+      double yieldErr = f->Integral(minhisto,maxhisto)/binwidthmass*f->GetParError(0)/f->GetParameter(0);
       hPt->SetBinContent(i+1,yield/(ptBins[i+1]-ptBins[i]));
       hPt->SetBinError(i+1,yieldErr/(ptBins[i+1]-ptBins[i]));
     }  
@@ -129,7 +116,7 @@ void fitDPbPb(TString infname="", TString label="", Bool_t doweight=true)
   cPtSigma->SetLogy();
   hPtSigma->Draw();
   
-  TFile* outf = new TFile(Form("ResultsD0_PbPb/PtSigmaDzero%s.root",label.Data()),"recreate");
+  TFile* outf = new TFile(outputfile.Data(),"recreate");
   outf->cd();
   hPt->Write();
   hEff->Write();
@@ -154,9 +141,9 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   count++;
 
   TCanvas* c= new TCanvas(Form("c%d",count),"",600,600);
-  TH1D* h = new TH1D(Form("h-%d",count),"",60,1.7,2.0);
-  TH1D* hMCSignal = new TH1D(Form("hMCSignal-%d",count),"",60,1.7,2.0);
-  TH1D* hMCSwapped = new TH1D(Form("hMCSwapped-%d",count),"",60,1.7,2.0);
+  TH1D* h = new TH1D(Form("h-%d",count),"",nbinsmasshisto,minhisto,maxhisto);
+  TH1D* hMCSignal = new TH1D(Form("hMCSignal-%d",count),"",nbinsmasshisto,minhisto,maxhisto);
+  TH1D* hMCSwapped = new TH1D(Form("hMCSwapped-%d",count),"",nbinsmasshisto,minhisto,maxhisto);
   
   TF1* f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x", 1.7, 2.0);
   
@@ -186,12 +173,12 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   f->FixParameter(6,0);
   h->GetEntries();
   
-  hMCSignal->Fit(Form("f%d",count),"q","",1.7,2.0);
-  hMCSignal->Fit(Form("f%d",count),"q","",1.7,2.0);
+  hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
+  hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   f->ReleaseParameter(1);
-  hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  hMCSignal->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  hMCSignal->Fit(Form("f%d",count),"L m","",1.7,2.0);
+  hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
+  hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
+  hMCSignal->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
   
   f->FixParameter(1,f->GetParameter(1));
   f->FixParameter(2,f->GetParameter(2));
@@ -201,10 +188,10 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   f->ReleaseParameter(8);
   f->SetParameter(8,setparam8);
   
-  hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  hMCSwapped->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  hMCSwapped->Fit(Form("f%d",count),"L m","",1.7,2.0);
+  hMCSwapped->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
+  hMCSwapped->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
+  hMCSwapped->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
+  hMCSwapped->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
   
   f->FixParameter(7,hMCSignal->Integral(0,1000)/(hMCSwapped->Integral(0,1000)+hMCSignal->Integral(0,1000)));
   f->FixParameter(8,f->GetParameter(8));
@@ -215,13 +202,13 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
 
   f->SetLineColor(kRed);
   
-  h->Fit(Form("f%d",count),"q","",1.7,2.0);
-  h->Fit(Form("f%d",count),"q","",1.7,2.0);
+  h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
+  h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   f->ReleaseParameter(1);
-  h->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  h->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  h->Fit(Form("f%d",count),"L q","",1.7,2.0);
-  h->Fit(Form("f%d",count),"L m","",1.7,2.0);
+  h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
+  h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
+  h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
+  h->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
   
   TF1* background = new TF1(Form("background%d",count),"[0]+[1]*x+[2]*x*x+[3]*x*x*x");
   background->SetParameter(0,f->GetParameter(3));
@@ -229,7 +216,7 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   background->SetParameter(2,f->GetParameter(5));
   background->SetParameter(3,f->GetParameter(6));
   background->SetLineColor(4);
-  background->SetRange(1.7,2.0);
+  background->SetRange(minhisto,maxhisto);
   background->SetLineStyle(2);
   
   TF1* mass = new TF1(Form("fmass%d",count),"[0]*([3]*([4]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[4])*Gaus(x,[1],[5])/(sqrt(2*3.14159)*[5])))");
@@ -281,14 +268,14 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   h->Draw("e");
 
   background->Draw("same");   
-  mass->SetRange(1.7,2.0);	
+  mass->SetRange(minhisto,maxhisto);	
   mass->Draw("same");
-  massSwap->SetRange(1.7,2.0);
+  massSwap->SetRange(minhisto,maxhisto);
   massSwap->Draw("same");
   f->Draw("same");
   
-  Double_t yield = mass->Integral(1.7,2.0)/0.005;
-  Double_t yieldErr = mass->Integral(1.7,2.0)/0.005*mass->GetParError(0)/mass->GetParameter(0);
+  Double_t yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
+  Double_t yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
 
   TLegend* leg = new TLegend(0.65,0.58,0.82,0.88,NULL,"brNDC");
   leg->SetBorderSize(0);
@@ -308,7 +295,7 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   Tl.SetTextSize(0.04);
   Tl.SetTextFont(42);
   Tl.DrawLatex(0.18,0.93, "#scale[1.25]{CMS} Preliminary");
-  Tl.DrawLatex(0.65,0.93, "PbPb #sqrt{s_{NN}} = 5.02 TeV");
+  Tl.DrawLatex(0.65,0.93, Form("%s #sqrt{s_{NN}} = 5.02 TeV",collisionsystem.Data()));
 
   TLatex* tex;
 
@@ -330,9 +317,23 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   TH1F* histo_copy_nofitfun = ( TH1F * ) h->Clone("histo_copy_nofitfun");
   histo_copy_nofitfun->Draw("esame");
 //
-  if(nBins==1) c->SaveAs("ResultsD0_PbPb/DMass-inclusive.pdf");
-  else c->SaveAs(Form("ResultsD0_PbPb/DMass-%d.pdf",count));
+  if(nBins==1) c->SaveAs(Form("DMass-inclusive%s.pdf",collisionsystem.Data()));
+  else c->SaveAs(Form("DMass%s.pdf",collisionsystem.Data()));
   
   return mass;
+}
+
+
+int main(int argc, char *argv[])
+{
+  if((argc != 11))
+  {
+    std::cout << "Wrong number of inputs" << std::endl;
+    return 1;
+  }
+  
+  if(argc == 11)
+    fitD(argv[1], argv[2], argv[3], argv[4], argv[5], atoi(argv[6]), atof(argv[7]), atoi(argv[8]),argv[9],argv[10]);
+  return 0;
 }
 
