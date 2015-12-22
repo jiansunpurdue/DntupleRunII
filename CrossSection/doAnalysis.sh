@@ -4,7 +4,7 @@ FONLLDATINPUT="pp_d0meson5_5TeV_y1"
 FONLLOUTPUTFILE="output_pp_d0meson5_5TeV_y1.root"
 
 INPUTMCPP="/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root"
-INPUTDATAPP="/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root"
+INPUTDATAPP="/afs/cern.ch/work/g/ginnocen/public/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root"
 LUMIPP=13.9
 ISMCPP=0
 ISDOWEIGHTPP=1
@@ -15,7 +15,7 @@ LABELPP="PP"
 OUTPUTFILEPP="hPtSpectrumDzeroPP.root"
 
 INPUTMCPbPb="/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root"
-INPUTDATAPbPb="/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/DfinderData_PbPb_20151220_dPt10tkPt2p5_D0Dstar3p5p_hltfix/merged_ntuple.root"
+INPUTDATAPbPb="/afs/cern.ch/work/g/ginnocen/public/HeavyFlavourRun2/DfinderData_PbPb_20151220_dPt10tkPt2p5_D0Dstar3p5p_hltfix/merged_ntuple.root"
 LUMIPbPb=0.0000095
 ISMCPbPb=0
 ISDOWEIGHTPbPb=1
