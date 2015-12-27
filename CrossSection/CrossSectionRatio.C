@@ -99,8 +99,7 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   TH2F* hemptySigma=new TH2F("hemptySigma","",50,10.,210,10.,1.1e-2,1.e6);  
   hemptySigma->GetXaxis()->CenterTitle();
   hemptySigma->GetYaxis()->CenterTitle();
-  //hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( pb GeV^{-1}c)");
-  hemptySigma->GetYaxis()->SetTitle("arbitrary units");
+  hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( pb GeV^{-1}c)");
   hemptySigma->GetXaxis()->SetTitleOffset(1.);
   hemptySigma->GetYaxis()->SetTitleOffset(1.3);
   hemptySigma->GetXaxis()->SetTitleSize(0.045);
@@ -158,7 +157,7 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   pRatio->Draw();
   pRatio->cd();
 
-  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,210,10.,0.,3.0);
+  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,210,10.,0.5,2.0);
   hemptyRatio->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyRatio->GetYaxis()->CenterTitle();
   hemptyRatio->GetYaxis()->SetTitle("Data / FONLL");
