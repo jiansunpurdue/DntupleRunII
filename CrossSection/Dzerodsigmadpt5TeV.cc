@@ -169,9 +169,9 @@ void Dzerodsigmadpt5TeV(TString inputFONLLdat, TString outputFONLL)
   hempty->GetXaxis()->SetLabelSize(0.04);
   hempty->GetYaxis()->SetLabelSize(0.04);  
   hempty->Draw();
-  hminall->SetLineColor(2);
-  hmaxall->SetLineColor(2);
-  hpt->SetLineColor(2);
+  hminall->SetLineColor(4);
+  hmaxall->SetLineColor(4);
+  hpt->SetLineColor(4);
   hminall->Draw("same");
   hmaxall->Draw("same");
   hpt->Draw("same");
