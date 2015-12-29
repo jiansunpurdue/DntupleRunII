@@ -14,9 +14,11 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   TGraphAsymmErrors* gaeBplusReference = (TGraphAsymmErrors*)filePPReference->Get("gaeSigmaDzero");
   
   TFile* filePP = new TFile(inputPP.Data());
+  TH1F* hEffPP = (TH1F*)filePP->Get("hEff");
   TH1F* hSigmaPPStat = (TH1F*)filePP->Get("hPtSigma");
 
   TFile* filePbPb = new TFile(inputPbPb.Data());
+  TH1F* hEffPbPb = (TH1F*)filePbPb->Get("hEff");
   TH1F* hRAA = (TH1F*)filePbPb->Get("hPtSigma");
   hRAA->SetName("hRAA");
   hRAA->Divide(hSigmaPPStat);
@@ -96,7 +98,7 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   pSigma->Draw();
   pSigma->cd();
 
-  TH2F* hemptySigma=new TH2F("hemptySigma","",50,10.,210,10.,1.1e-2,1.e6);  
+  TH2F* hemptySigma=new TH2F("hemptySigma","",50,50.,110,10.,1.1e-2,1.e6);  
   hemptySigma->GetXaxis()->CenterTitle();
   hemptySigma->GetYaxis()->CenterTitle();
   hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( pb GeV^{-1}c)");
@@ -157,7 +159,7 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   pRatio->Draw();
   pRatio->cd();
 
-  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,210,10.,0.5,2.0);
+  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,50.,110,10.,0.5,2.0);
   hemptyRatio->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyRatio->GetYaxis()->CenterTitle();
   hemptyRatio->GetYaxis()->SetTitle("Data / FONLL");
@@ -181,6 +183,38 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   l->Draw("same");
   cSigma->SaveAs("canvasSigmaDzeroRatio.pdf");
   
+  
+  TCanvas* cEffPP = new TCanvas("cEffPP","",600,500);
+  
+  TH2F* hemptyEff=new TH2F("hemptyEff","",50,50.,110,10.,0,1.);  
+  hemptyEff->GetXaxis()->CenterTitle();
+  hemptyEff->GetYaxis()->CenterTitle();
+  hemptyEff->GetYaxis()->SetTitle("efficiency");
+  hemptyEff->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+  hemptyEff->GetXaxis()->SetTitleOffset(1.);
+  hemptyEff->GetYaxis()->SetTitleOffset(1.1);
+  hemptyEff->GetXaxis()->SetTitleSize(0.045);
+  hemptyEff->GetYaxis()->SetTitleSize(0.045);
+  hemptyEff->GetXaxis()->SetTitleFont(42);
+  hemptyEff->GetYaxis()->SetTitleFont(42);
+  hemptyEff->GetXaxis()->SetLabelFont(42);
+  hemptyEff->GetYaxis()->SetLabelFont(42);
+  hemptyEff->GetXaxis()->SetLabelSize(0.04);
+  hemptyEff->GetYaxis()->SetLabelSize(0.04);  
+  hemptyEff->SetMaximum(2);
+  hemptyEff->SetMinimum(0.);
+  hemptyEff->Draw();
+  
+  cEffPP->cd();
+  hemptyEff->Draw();
+  hEffPP->Draw("same");
+  cEffPP->SaveAs("efficiencyPP.pdf");
+  
+  TCanvas* cEffPbPb = new TCanvas("cEffPbPb","",600,500);
+  cEffPbPb->cd();
+  hemptyEff->Draw();
+  hEffPbPb->Draw("same");
+  cEffPbPb->SaveAs("efficiencyPbPb.pdf");  
 }
 
 
