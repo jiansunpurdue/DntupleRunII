@@ -2,6 +2,10 @@
 source clean.sh
 FONLLDATINPUT="pp_d0meson5_5TeV_y1"
 FONLLOUTPUTFILE="output_pp_d0meson5_5TeV_y1.root"
+FONLLDATINPUTBtoD="pp_Btod0meson5_5TeV_y1"
+FONLLOUTPUTFILEBtoD="output_pp_Btod0meson5_5TeV_y1.root"
+FONLLOUTPUTFILEInclusiveD="output_inclusiveDd0meson5_5TeV_y1.root"
+
 
 INPUTMCPP="/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root"
 INPUTDATAPP="/data/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root"
@@ -27,6 +31,10 @@ OUTPUTFILEPbPb="hPtSpectrumDzeroPbPb.root"
 
 g++ Dzerodsigmadpt5TeV.cc $(root-config --cflags --libs) -g -o Dzerodsigmadpt5TeV.exe 
 ./Dzerodsigmadpt5TeV.exe "$FONLLDATINPUT"  "$FONLLOUTPUTFILE" 
+./Dzerodsigmadpt5TeV.exe "$FONLLDATINPUTBtoD"  "$FONLLOUTPUTFILEBtoD" 
+
+g++ RatioFeedDown.cc $(root-config --cflags --libs) -g -o RatioFeedDown.exe 
+./RatioFeedDown.exe "$FONLLOUTPUTFILE"  "$FONLLOUTPUTFILEBtoD" "$FONLLOUTPUTFILEInclusiveD"
 
 g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe 
 ./fitD.exe "$INPUTDATAPP"  "$INPUTMCPP"  "$TRGPP" "$CUTPP"   "$SELGENPP"   "$ISMCPP"   "$LUMIPP"   "$ISDOWEIGHTPP"   "$LABELPP"  "$OUTPUTFILEPP"
@@ -35,4 +43,4 @@ g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe
 ./fitD.exe "$INPUTDATAPbPb"  "$INPUTMCPbPb"  "$TRGPbPb" "$CUTPbPb"   "$SELGENPbPb"   "$ISMCPbPb"   "$LUMIPbPb"   "$ISDOWEIGHTPbPb"  "$LABELPbPb"  "$OUTPUTFILEPbPb"
 
 g++ CrossSectionRatio.C $(root-config --cflags --libs) -g -o CrossSectionRatio.exe 
-./CrossSectionRatio.exe "$FONLLOUTPUTFILE"  "$OUTPUTFILEPP"  "$OUTPUTFILEPbPb"
+./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPP"  "$OUTPUTFILEPbPb"
