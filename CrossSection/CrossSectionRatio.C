@@ -3,7 +3,7 @@
 #include "TLegendEntry.h"
 
 
-void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
+void CrossSectionRatio(TString inputFONLL="output_inclusiveDd0meson5_5TeV_y1.root", TString inputPP="hPtSpectrumDzeroPP.root", TString inputPbPb="hPtSpectrumDzeroPbPb.root", TString inputprescalesPP="prescalePP.root", TString inputprescalesPbPb="prescalePbPb.root")
 {
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -16,6 +16,9 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   TFile* filePP = new TFile(inputPP.Data());
   TH1F* hEffPP = (TH1F*)filePP->Get("hEff");
   TH1F* hSigmaPPStat = (TH1F*)filePP->Get("hPtSigma");
+  TFile*fprescalesPP=new TFile(inputprescalesPP.Data());
+  TFile*fprescalesPbPb=new TFile(inputprescalesPbPb.Data());
+
 
   TFile* filePbPb = new TFile(inputPbPb.Data());
   TH1F* hEffPbPb = (TH1F*)filePbPb->Get("hEff");
@@ -24,10 +27,19 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   hRAA->Divide(hSigmaPPStat);
   hRAA->Scale(1./(208.*208.));
   std::cout<<hRAA->GetBinContent(1)<<std::endl;
+
+  
+  TH1F*hPrescalesPtBinsPP=(TH1F*)fprescalesPP->Get("hPrescalesPtBins");
+  TH1F*hPrescalesPtBinsPbPb=(TH1F*)fprescalesPbPb->Get("hPrescalesPtBins");
+  for (int i=0;i<nBins;i++) {
+    hSigmaPPStat->SetBinContent(i+1,hSigmaPPStat->GetBinContent(i+1)/hPrescalesPtBinsPP->GetBinContent(i+1));
+    hRAA->SetBinContent(i+1,hRAA->GetBinContent(i+1)/hPrescalesPtBinsPbPb->GetBinContent(i+1));
+  }
+
   
   TCanvas* cRAA = new TCanvas("cRAA","",600,500);
   cRAA->cd();
-  TH2F* hemptyRAA=new TH2F("hemptyRAA","",50,50.,110,10.,0.,1.0);
+  TH2F* hemptyRAA=new TH2F("hemptyRAA","",50,10.,110.,10.,0.,20.0);
   hemptyRAA->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyRAA->GetYaxis()->CenterTitle();
   hemptyRAA->GetYaxis()->SetTitle("R_{AA}");
@@ -44,7 +56,6 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   hemptyRAA->Draw();
   hRAA->Draw("psame");
   cRAA->SaveAs("cRAA.pdf");
-
 
   Double_t xr[nBins], yr[nBins], xrlow[nBins], yrlow[nBins],xrhigh[nBins],yrhigh[nBins];
   Double_t yf[nBins], yflow[nBins],yfhigh[nBins];
@@ -98,7 +109,7 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   pSigma->Draw();
   pSigma->cd();
 
-  TH2F* hemptySigma=new TH2F("hemptySigma","",50,50.,110,10.,1.1e-2,1.e6);  
+  TH2F* hemptySigma=new TH2F("hemptySigma","",50,10.,110.,10.,1.1e-2,1.e6);  
   hemptySigma->GetXaxis()->CenterTitle();
   hemptySigma->GetYaxis()->CenterTitle();
   hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( pb GeV^{-1}c)");
@@ -159,7 +170,7 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   pRatio->Draw();
   pRatio->cd();
 
-  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,50.,110,10.,0.5,2.0);
+  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,110.,10.,0.5,2.0);
   hemptyRatio->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyRatio->GetYaxis()->CenterTitle();
   hemptyRatio->GetYaxis()->SetTitle("Data / FONLL");
@@ -186,7 +197,7 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   
   TCanvas* cEffPP = new TCanvas("cEffPP","",600,500);
   
-  TH2F* hemptyEff=new TH2F("hemptyEff","",50,50.,110,10.,0,1.);  
+  TH2F* hemptyEff=new TH2F("hemptyEff","",50,10.,110.,10.,0,1.);  
   hemptyEff->GetXaxis()->CenterTitle();
   hemptyEff->GetYaxis()->CenterTitle();
   hemptyEff->GetYaxis()->SetTitle("efficiency");
@@ -209,25 +220,26 @@ void CrossSectionRatio(TString inputFONLL, TString inputPP, TString inputPbPb)
   hemptyEff->Draw();
   hEffPP->Draw("same");
   cEffPP->SaveAs("efficiencyPP.pdf");
-  
+
   TCanvas* cEffPbPb = new TCanvas("cEffPbPb","",600,500);
   cEffPbPb->cd();
   hemptyEff->Draw();
   hEffPbPb->Draw("same");
   cEffPbPb->SaveAs("efficiencyPbPb.pdf");  
+
 }
 
 
 int main(int argc, char *argv[])
 {
-  if((argc != 4))
+  if((argc != 6))
   {
     std::cout << "Wrong number of inputs" << std::endl;
     return 1;
   }
   
-  if(argc == 4)
-    CrossSectionRatio(argv[1], argv[2], argv[3]);
+  if(argc == 6)
+    CrossSectionRatio(argv[1], argv[2], argv[3], argv[4], argv[5]);
   return 0;
 }
 

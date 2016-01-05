@@ -2,7 +2,7 @@ rm *.so
 rm *.d
 rm *.eps
 rm *.pdf
-rm *.root
+#rm *.root
 rm *.pcm
 rm *.root
 rm *.exe
