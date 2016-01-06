@@ -1,7 +1,7 @@
 #include "uti.h"
 
 TString mvatk = "(Dtrk1highPurity&&Dtrk2highPurity)&&(Dmass>1.75&&Dmass<1.95)";
-TString mbtrg = "(HLT_L1MinimumBiasHF1OR_part0_v1||HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)";
+TString mbtrg = "(HLT_L1MinimumBiasHF1OR_part0_v1||HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)&&(L1_SingleJet28_BptxAND_Prescl==1)";
 TString prefilter = Form("(Dtrk1Algo<8&&Dtrk2Algo<8)&&(DlxyBS/DlxyBSErr)>1.&&(DsvpvDistance/DsvpvDisErr)>1.5&&Dtrk1Pt>3.&&Dtrk2Pt>3.&&Dchi2cl>0.10&&TMath::Cos(Dalpha)>0.9&&%s&&%s",mvatk.Data(),mbtrg.Data());
 Bool_t isPbPb = false;
 
@@ -11,11 +11,11 @@ void triggerturnonFast(TString trigger="HLT_DmesonPPTrackingGlobal_Dpt20_v1")
   void plotTurnOn(TH1D* hnominator, TH1D* hdenominator, TString triggerlegend, TString triggername, TString varname, TString varlatex, Int_t BIN_NUM, Double_t BIN_MIN, Double_t BIN_MAX);
 
   TString infname;
-  infname = "/data/dmeson2015/Dntuple/ntD_pp_run262163PromptReco_MB_7MEvents.root";
-  //infname = "/data/dmeson2015/Dntuple/Dntuple_run262163_262165_262167_262172.root";
+  infname = "/data/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root";
+  //infname = "/data/dmeson2015/Dntuple/ntD_pp_run262163PromptReco_MB_7MEvents.root";
   TFile* infile = new TFile(infname);
   TTree* root = (TTree*)infile->Get("ntDkpi");
-  root->AddFriend("HltTree",infname);
+  root->AddFriend("ntHlt",infname);
 
   TH1D* hpp_pt = getYield(root,"","","","Dpt","pt","p_{T} (GeV/c)",16,0,80);
   TH1D* hpp_pt_Hlt = getYield(root,Form("&&%s",trigger.Data()),Form("_%s",trigger.Data()),Form("*%s_Prescl",trigger.Data()),"Dpt","pt","p_{T} (GeV/c)",16,0,80);
