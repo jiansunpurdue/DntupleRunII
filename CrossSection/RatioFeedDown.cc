@@ -146,7 +146,7 @@ void RatioFeedDown(TString inputDpromptFONLL="output_pp_d0meson5_5TeV_y1.root", 
 
   TCanvas* cInclusiveCross = new TCanvas("cInclusiveCross","cInclusiveCross",600,500);
   cInclusiveCross->SetLogy();
-  TH2F* hemptyinclusive=new TH2F("hemptyinclusive","",10,0,100.,10.,1.,100);  
+  TH2F* hemptyinclusive=new TH2F("hemptyinclusive","",10,0,100.,10.,1.,1e7);  
   hemptyinclusive->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyinclusive->GetYaxis()->SetTitle("d#sigma(D)/dp_{T}(pb GeV-1c)");
   hemptyinclusive->GetXaxis()->SetTitleOffset(1.);

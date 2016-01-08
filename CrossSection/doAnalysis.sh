@@ -1,20 +1,24 @@
 #!/bin/bash
 source clean.sh
-FONLLDATINPUT="pp_d0meson5_5TeV_y1"
-FONLLOUTPUTFILE="output_pp_d0meson5_5TeV_y1.root"
-FONLLDATINPUTBtoD="pp_Btod0meson5_5TeV_y1"
-FONLLOUTPUTFILEBtoD="output_pp_Btod0meson5_5TeV_y1.root"
-FONLLOUTPUTFILEInclusiveD="output_inclusiveDd0meson5_5TeV_y1.root"
+DOFITS=1
+FONLLDATINPUT="pp_d0meson_5TeV_y1"
+FONLLDATINPUTBtoD="pp_Btod0meson_5TeV_y1"
+FONLLDATINPUTB="pp_Bmeson_5TeV_y1"
+
+FONLLOUTPUTFILE="output_pp_d0meson_5TeV_y1.root"
+FONLLOUTPUTFILEBtoD="output_pp_Btod0meson_5TeV_y1.root"
+FONLLOUTPUTFILEInclusiveD="output_inclusiveDd0meson_5TeV_y1.root"
+FONLLOUTPUTFILEB="output_pp_Bmeson_5TeV_y1.root"
 
 
-INPUTMCPP="/data/dmeson2015/MCDntuple/ntD_20151115_DfinderMC_20151110_EvtMatching_Pythia_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_7415_v20_1116_Pthat5_15_35merged.root"
+INPUTMCPP="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160107_Dfinder_20151229_pp_Pythia8_prompt_D0pt30p0_Pthat30_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root"
 INPUTDATAPP="/data/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root"
 LUMIPP=13.9
 ISMCPP=0
 ISDOWEIGHTPP=1
 CUTPP="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5"
 SELGENPP="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))"
-TRGPP="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>15&&Dpt<30)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>30&&Dpt<50)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>50))"
+TRGPP="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>25&&Dpt<40)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>40&&Dpt<60)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>60))"
 LABELPP="PP"
 OUTPUTFILEPP="hPtSpectrumDzeroPP.root"
 
@@ -33,12 +37,17 @@ OUTPUTFILEPbPb="hPtSpectrumDzeroPbPb.root"
 OUTPUTPrescalePP="prescalePP.root"
 OUTPUTPrescalePbPb="prescalePbPb.root"
 
-g++ Dzerodsigmadpt5TeV.cc $(root-config --cflags --libs) -g -o Dzerodsigmadpt5TeV.exe 
-./Dzerodsigmadpt5TeV.exe "$FONLLDATINPUT"  "$FONLLOUTPUTFILE" 
-./Dzerodsigmadpt5TeV.exe "$FONLLDATINPUTBtoD"  "$FONLLOUTPUTFILEBtoD" 
+g++ Dzerodsigmadpt.cc $(root-config --cflags --libs) -g -o Dzerodsigmadpt.exe 
+./Dzerodsigmadpt.exe "$FONLLDATINPUT"  "$FONLLOUTPUTFILE" 
+./Dzerodsigmadpt.exe "$FONLLDATINPUTBtoD"  "$FONLLOUTPUTFILEBtoD" 
 
-g++ RatioFeedDown.cc $(root-config --cflags --libs) -g -o RatioFeedDown.exe 
-./RatioFeedDown.exe "$FONLLOUTPUTFILE"  "$FONLLOUTPUTFILEBtoD" "$FONLLOUTPUTFILEInclusiveD"
+g++ BplusAlldsigmadpt.cc $(root-config --cflags --libs) -g -o BplusAlldsigmadpt.exe 
+./BplusAlldsigmadpt.exe "$FONLLDATINPUTB"  "$FONLLOUTPUTFILEB" 
+
+if [ $DOFITS -eq 1 ]; then      
+
+#g++ RatioFeedDown.cc $(root-config --cflags --libs) -g -o RatioFeedDown.exe 
+#./RatioFeedDown.exe "$FONLLOUTPUTFILE"  "$FONLLOUTPUTFILEBtoD" "$FONLLOUTPUTFILEInclusiveD"
 
 g++ triggercombination.cc $(root-config --cflags --libs) -g -o triggercombination.exe 
 ./triggercombination.exe "$LABELPP"  "$INPUTDATAPP" "$OUTPUTPrescalePP"
@@ -53,5 +62,6 @@ g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe
 ./fitD.exe "$INPUTDATAPbPb"  "$INPUTMCPbPb"  "$TRGPbPb" "$CUTPbPb"   "$SELGENPbPb"   "$ISMCPbPb"   "$LUMIPbPb"   "$ISDOWEIGHTPbPb"  "$LABELPbPb"  "$OUTPUTFILEPbPb"
 
 g++ CrossSectionRatio.C $(root-config --cflags --libs) -g -o CrossSectionRatio.exe 
-./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPP"  "$OUTPUTFILEPbPb"  "$OUTPUTPrescalePP"  "$OUTPUTPrescalePbPb"
+./CrossSectionRatio.exe "$FONLLOUTPUTFILE"  "$OUTPUTFILEPP"  "$OUTPUTFILEPbPb"  "$OUTPUTPrescalePP"  "$OUTPUTPrescalePbPb"
  
+fi

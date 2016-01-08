@@ -46,11 +46,14 @@ void fitD(TString inputdata, TString inputmc, TString trgselection,  TString cut
   
   TTree* ntMC = (TTree*)infMC->Get("ntDkpi");
   TTree* ntGen = (TTree*)infMC->Get("ntGen");
-  TTree* MCHltTree = (TTree*)infMC->Get("HltTree");
+  TTree* MCHltTree;
+ // if (collisionsystem=="PP") MCHltTree= (TTree*)infMC->Get("ntHlt");
+ // else MCHltTree= (TTree*)infMC->Get("HltTree");
+  MCHltTree= (TTree*)infMC->Get("HltTree");
 
   ntGen->AddFriend(ntMC);
   MCHltTree->AddFriend(ntMC);
-
+  
   TH1D* hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D* hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
   TH1D* hPtMC = new TH1D("hPtMC","",nBins,ptBins);

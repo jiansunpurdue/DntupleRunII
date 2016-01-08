@@ -16,9 +16,9 @@
 
 using namespace std;
 
-void Dzerodsigmadpt5TeV(TString inputFONLLdat, TString outputFONLL)
+void BplusAlldsigmadpt(TString inputFONLLdat, TString outputFONLL)
 {
-  double norm=0.557;           //FF of D->D0
+  double norm=0.401;           //FF=B0
   gROOT->SetStyle("Plain");
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -134,30 +134,29 @@ void Dzerodsigmadpt5TeV(TString inputFONLLdat, TString outputFONLL)
       aerrorh[j] = amaxall[j]-asigma[j];//all,sc,mass,pdf
     }
 
-  cout<<"------- pp at 5.5------"<<endl;
   cout<<endl;
 
-  TGraphAsymmErrors* gaeSigma = new TGraphAsymmErrors(nBins, apt, asigma, aptl, aptl, aerrorl, aerrorh);
-  gaeSigma->SetFillColor(2);
-  gaeSigma->SetFillStyle(3001);
+  TGraphAsymmErrors* gaeSigmaBall = new TGraphAsymmErrors(nBins, apt, asigma, aptl, aptl, aerrorl, aerrorh);
+  gaeSigmaBall->SetFillColor(2);
+  gaeSigmaBall->SetFillStyle(3001);
 
-  TGraphAsymmErrors* gaeSigmaDzero=(TGraphAsymmErrors*)gaeSigma->Clone();
-  gaeSigmaDzero->SetName("gaeSigmaDzero");
-  gaeSigmaDzero->SetFillColor(2);
-  gaeSigmaDzero->SetFillStyle(3001); 
-  gaeSigmaDzero->SetTitle(";p_{T}(GeV/c);d#sigma/dp_{T} (D^{0}) (pb GeV-1c)");
+  TGraphAsymmErrors* gaeSigmaBzero=(TGraphAsymmErrors*)gaeSigmaBall->Clone();
+  gaeSigmaBzero->SetName("gaeSigmaBzero");
+  gaeSigmaBzero->SetFillColor(2);
+  gaeSigmaBzero->SetFillStyle(3001); 
+  gaeSigmaBzero->SetTitle(";p_{T}(GeV/c);d#sigma/dp_{T} (B mesons) (pb GeV-1c)");
   
-  for (int i=0;i<gaeSigmaDzero->GetN();i++){
-    gaeSigmaDzero->GetY()[i] *= norm;
-    gaeSigmaDzero->SetPointEYhigh(i,gaeSigmaDzero->GetErrorYhigh(i)*norm);
-    gaeSigmaDzero->SetPointEYlow(i,gaeSigmaDzero->GetErrorYlow(i)*norm); 
+  for (int i=0;i<gaeSigmaBzero->GetN();i++){
+    gaeSigmaBzero->GetY()[i] *= norm;
+    gaeSigmaBzero->SetPointEYhigh(i,gaeSigmaBzero->GetErrorYhigh(i)*norm);
+    gaeSigmaBzero->SetPointEYlow(i,gaeSigmaBzero->GetErrorYlow(i)*norm); 
   }
      
   TCanvas* cr = new TCanvas("cr","cr",600,500);
   cr->SetLogy();
   TH2F* hempty=new TH2F("hempty","",10,0,100.,10.,10.,5000000000);  
   hempty->GetXaxis()->SetTitle("p_{t} (GeV/c)");
-  hempty->GetYaxis()->SetTitle("d#sigma(D)/dp_{T}(pb GeV-1c)");
+  hempty->GetYaxis()->SetTitle("d#sigma(B)/dp_{T}(pb GeV-1c)");
   hempty->GetXaxis()->SetTitleOffset(1.);
   hempty->GetYaxis()->SetTitleOffset(.9);
   hempty->GetXaxis()->SetTitleSize(0.045);
@@ -175,13 +174,13 @@ void Dzerodsigmadpt5TeV(TString inputFONLLdat, TString outputFONLL)
   hminall->Draw("same");
   hmaxall->Draw("same");
   hpt->Draw("same");
-  gaeSigma->SetLineWidth(3);
-  gaeSigma->Draw("psame");
-  gaeSigmaDzero->SetLineWidth(3);
-  gaeSigmaDzero->SetLineColor(2);
-  gaeSigmaDzero->Draw("psame");
+  gaeSigmaBall->SetLineWidth(3);
+  gaeSigmaBall->Draw("psame");
+  gaeSigmaBzero->SetLineWidth(3);
+  gaeSigmaBzero->SetLineColor(2);
+  gaeSigmaBzero->Draw("psame");
 
-  TLatex * tlatex=new TLatex(0.18,0.85,"pp collisions at 5.5 from FONLL, |y|<1");
+  TLatex * tlatex=new TLatex(0.18,0.85,"pp collisions from FONLL, |y|<1");
   tlatex->SetNDC();
   tlatex->SetTextColor(1);
   tlatex->SetTextFont(42);
@@ -195,7 +194,7 @@ void Dzerodsigmadpt5TeV(TString inputFONLLdat, TString outputFONLL)
   tlatextotunc->SetTextSize(0.04);
   tlatextotunc->Draw();
   
-  TLatex * tlatexD0=new TLatex(0.2,0.7,"D^{0},|y|<1, BR unc not shown");
+  TLatex * tlatexD0=new TLatex(0.2,0.7,"B mesons,|y|<1, BR unc not shown");
   tlatexD0->SetNDC();
   tlatexD0->SetTextColor(1);
   tlatexD0->SetTextFont(42);
@@ -211,21 +210,24 @@ void Dzerodsigmadpt5TeV(TString inputFONLLdat, TString outputFONLL)
   
   TLegend* leg=new TLegend(0.4,0.5,0.89,0.6);
   leg->SetFillColor(0);
-  TLegendEntry* ent_gaeSigma=leg->AddEntry(gaeSigma,"Frag.Fraction=1.0 (pure FONLL)","PL");
-  ent_gaeSigma->SetTextColor(gaeSigma->GetMarkerColor());
-  TLegendEntry* ent_gaeSigmaDzero=leg->AddEntry(gaeSigmaDzero,"Multiplied by Frag. Fraction=0.577","PL");
-  ent_gaeSigmaDzero->SetTextColor(gaeSigmaDzero->GetMarkerColor());
+  TLegendEntry* ent_gaeSigma=leg->AddEntry(gaeSigmaBall,"B admixture (pure FONLL)","PL");
+  ent_gaeSigma->SetTextColor(gaeSigmaBall->GetMarkerColor());
+  TLegendEntry* ent_gaeSigmaB=leg->AddEntry(gaeSigmaBzero,"B^{+}, Multiplied by Frag. Fraction=0.401","PL");
+  ent_gaeSigmaB->SetTextColor(gaeSigmaBzero->GetMarkerColor());
   leg->Draw();
 
-  gaeSigma->SetName("gaeSigma");
-  gaeSigmaDzero->SetName("gaeSigmaDzero");
+  gaeSigmaBall->SetName("gaeSigmaBall");
+  gaeSigmaBzero->SetName("gaeSigmaBzero");
   cr->SaveAs(Form("canvas_%s.pdf",inputFONLLdat.Data()));
   cr->SaveAs(Form("canvas_%s.eps",inputFONLLdat.Data()));
   
-  TFile*foutput=new TFile(Form("output_%s.root",inputFONLLdat.Data()),"recreate");
+  TFile*foutput=new TFile(outputFONLL.Data(),"recreate");
   foutput->cd();
-  gaeSigmaDzero->Write();
-  
+  gaeSigmaBzero->Write();
+  gaeSigmaBall->Write();
+  hpt->Write();
+  hminall->Write();
+  hmaxall->Write();
 }
 
 
@@ -238,6 +240,6 @@ int main(int argc, char *argv[])
   }
   
   if(argc == 3)
-    Dzerodsigmadpt5TeV(argv[1], argv[2]);
+    BplusAlldsigmadpt(argv[1], argv[2]);
   return 0;
 }
