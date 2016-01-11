@@ -1,0 +1,174 @@
+#include "uti.h"
+#include "parameters.h"
+
+Double_t setparam0=100.;
+Double_t setparam1=1.865;
+Double_t setparam2=0.03;
+Double_t setparam10=0.005;
+Double_t setparam8=0.1;
+Double_t setparam9=0.1;
+Double_t fixparam1=1.865;
+Double_t minhisto=	1.7;
+Double_t maxhisto=2.0;
+Double_t nbinsmasshisto=60;
+Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
+
+//TString weight = "((pthat>15&&pthat<30)/(1586786.9)+(pthat>30&&pthat<50)/(301.63705*1000000)+(pthat>50)/(501.32689*10000000))";
+TString weight = "(1)";
+TString seldata;
+TString selmc;
+TString collisionsystem;
+TString cut="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5";
+//TString cut="Dy>-1.&&Dy<1.";
+TString selmcgen="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))";
+
+void MCreweighting(){
+  TString inputFONLL="output_pp_d0meson_5TeV_y1.root";
+  TFile* filePPReference = new TFile(inputFONLL.Data());  
+  TGraphAsymmErrors* gaeBplusReference = (TGraphAsymmErrors*)filePPReference->Get("gaeSigmaDzero");
+  TH1D* hFONLL = new TH1D("hFONLL","",nBins,ptBins);
+  double x,y;
+  for(int i=0;i<nBins;i++){
+    gaeBplusReference->GetPoint(i,x,y);
+    hFONLL->SetBinContent(i+1,y);
+  }
+  TH1D* hFONLLOverPt=(TH1D*)hFONLL->Clone("hFONLLOverPt");
+  TH1D* hFONLLOverPtWeight=(TH1D*)hFONLL->Clone("hFONLLOverPtWeight");
+  TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8_prompt_D0pt30p0_Pthat30_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root";
+  //TString inputmc="/data/ginnocen/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8_prompt_D0_15_30_50merged.root";
+  //TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8_prompt_D0_noweight.root";
+  TString outputfile="testingWeight.root";
+  selmc = Form("%s",cut.Data());
+
+  TFile* infMC = new TFile(inputmc.Data());
+  TTree* ntMC = (TTree*)infMC->Get("ntDkpi");
+  TTree* ntGen = (TTree*)infMC->Get("ntGen");
+  TTree* nthi = (TTree*)infMC->Get("ntHi");
+  TTree* MCHltTree= (TTree*)infMC->Get("ntHlt"); //ntHlt //HltTree
+
+  ntGen->AddFriend(nthi);
+  
+  MCHltTree->AddFriend(ntMC);
+  MCHltTree->AddFriend(nthi);
+  
+  nthi->AddFriend(ntMC);
+  nthi->AddFriend(MCHltTree);
+  
+  ntMC->AddFriend(nthi);
+  ntMC->AddFriend(ntGen);
+  
+  TH1D* hPtMC = new TH1D("hPtMC","",nBins,ptBins);
+  TH1D* hPtGen = new TH1D("hPtGen","",nBins,ptBins);
+    
+  ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
+  divideBinWidth(hPtMC);
+  ntGen->Project("hPtGen","Gpt",TCut(weight)*(TCut(selmcgen.Data())));
+  divideBinWidth(hPtGen);
+  
+  hFONLLOverPt->Divide(hPtGen);
+  //TF1 *myfit = new TF1("myfit","[0]+x*[1]+x*x*[2]+x*x*x*[3]+x*x*x*x*[4]", 30, 100);
+  TF1 *myfit = new TF1("myfit","[0]+x*[1]+x*x*[2]+x*x*x*[3]", 30, 100);
+  hFONLLOverPt->Fit("myfit");
+
+  
+  hPtMC->Sumw2();
+  TH1D* hEff = (TH1D*)hPtMC->Clone("hEff");
+  hEff->SetMinimum(0);
+  hEff->SetMaximum(1.0);
+  hEff->SetTitle(";D^{0} p_{T} (GeV/c);Efficiency");
+  hEff->Sumw2();
+  hEff->Divide(hPtGen);
+
+  //TString weightfunction=Form("(%f+%f*Gpt+%f*Gpt*Gpt+%f*Gpt*Gpt*Gpt+%f*Gpt*Gpt*Gpt*Gpt)",myfit->GetParameter(0),myfit->GetParameter(1),myfit->GetParameter(2),myfit->GetParameter(3),myfit->GetParameter(4));
+  
+  double par0=myfit->GetParameter(0);
+  double par1=myfit->GetParameter(1);
+  double par2=myfit->GetParameter(2);
+  double par3=myfit->GetParameter(3);
+  
+  
+  TString weightfunction=Form("(%f+%f*Gpt+%f*Gpt*Gpt+%f*Gpt*Gpt*Gpt)",par0,par1,par2,par3);
+  TString weightfunctionreco=Form("(%f+%f*Dpt+%f*Dpt*Dpt+%f*Dpt*Dpt*Dpt)",par0,par1,par2,par3);
+  TH1D* hPtMCWeight = new TH1D("hPtMCWeight","",nBins,ptBins);
+  TH1D* hPtGenWeight = new TH1D("hPtGenWeight","",nBins,ptBins);
+    
+  ntMC->Project("hPtMCWeight","Dpt",TCut(weightfunctionreco)*TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
+  divideBinWidth(hPtMCWeight);
+  ntGen->Project("hPtGenWeight","Gpt",TCut(weightfunction)*TCut(weight)*(TCut(selmcgen.Data())));
+  divideBinWidth(hPtGenWeight);
+    
+  hPtMCWeight->Sumw2();
+  TH1D* hEffWeight = (TH1D*)hPtMCWeight->Clone("hEffWeight");
+  hEffWeight->SetMinimum(0);
+  hEffWeight->SetMaximum(1.0);
+  hEffWeight->SetTitle(";D^{0} p_{T} (GeV/c);Efficiency");
+  hEffWeight->Sumw2();
+  hEffWeight->Divide(hPtGenWeight);
+
+  hFONLLOverPtWeight->Divide(hPtGenWeight);
+  
+  
+  TH1D* hratioweight = (TH1D*)hEffWeight->Clone("hratioweight");
+  hratioweight->Divide(hEff);
+  
+  
+  TCanvas*canvas=new TCanvas("canvas","canvas",1000.,1000);
+  canvas->SetLogy();
+  canvas->Divide(3,4);
+  canvas->cd(1);
+  hPtGen->SetXTitle("Gen p_{T}");
+  hPtGen->SetYTitle("#entries");
+  hPtGen->SetMinimum(0.01);  
+  hPtGen->Draw();
+  canvas->cd(2);
+  hPtMC->SetMinimum(0.01);
+  hPtMC->SetXTitle("Reco matched p_{T}");
+  hPtMC->SetYTitle("#entries");
+  hPtMC->Draw();
+  canvas->cd(3);
+  hEff->SetXTitle("Gen p_{T}");
+  hEff->SetYTitle("Efficiency unweighted");
+  hEff->Draw();
+  canvas->cd(4);
+  hFONLL->SetXTitle("p_{T}");
+  hFONLL->SetYTitle("FONLL, #entries");
+  hFONLL->Draw("p");
+  canvas->cd(5);
+  hFONLLOverPt->SetXTitle("Gen p_{T}");
+  hFONLLOverPt->SetYTitle("FONLL/PYTHIA ");
+  hFONLLOverPt->Draw();
+  canvas->cd(6);
+  hFONLLOverPtWeight->SetMinimum(0.);
+  hFONLLOverPtWeight->SetMaximum(3.);  
+  hFONLLOverPtWeight->SetXTitle("Gen p_{T}");
+  hFONLLOverPtWeight->SetYTitle("FONLL/Gen pt weighed ");
+  hFONLLOverPtWeight->Draw();
+  canvas->cd(7);
+  hPtGenWeight->SetXTitle("Gen p_{T}");
+  hPtGenWeight->SetYTitle("#entries weighted");
+  hPtGenWeight->SetMinimum(0.01);  
+  hPtGenWeight->Draw();
+  canvas->cd(8);
+  hPtMCWeight->SetXTitle("Reco matched p_{T}");
+  hPtMCWeight->SetYTitle("#entries weighted");
+  hPtMCWeight->Draw();
+  canvas->cd(9);
+  hEffWeight->SetXTitle("Gen p_{T}");
+  hEffWeight->SetYTitle("Efficiency weighted");
+  hEffWeight->Draw();  
+  canvas->cd(10);
+  hratioweight->SetXTitle("Gen p_{T}");
+  hratioweight->SetYTitle("weighted/non weighted efficiencies");
+  hratioweight->SetMinimum(0.95);
+  hratioweight->SetMaximum(1.05);  
+  hratioweight->Draw("p");  
+  canvas->SaveAs("MCreweighting.pdf");
+  
+  TFile* outf = new TFile(outputfile.Data(),"recreate");
+  outf->cd();
+  hEff->Write();
+  hPtGen->Write();
+  hPtMC->Write();
+  myfit->Write();
+  outf->Close();
+}

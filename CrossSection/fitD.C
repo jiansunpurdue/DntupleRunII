@@ -18,7 +18,7 @@ TString seldata;
 TString selmc;
 TString collisionsystem;
 
-void fitD(TString inputdata, TString inputmc, TString trgselection,  TString cut, TString selmcgen, int isMC, Double_t luminosity, int doweight, TString collsyst, TString outputfile)
+void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderData_pp_20160111_dPt0tkPt1_D0Dstar3p5p_DCSJSON_v2.root", TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160107_Dfinder_20151229_pp_Pythia8_prompt_D0pt30p0_Pthat30_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root", TString trgselection="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>25&&Dpt<40)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>40&&Dpt<60)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>60))",  TString cut="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5", TString selmcgen="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))", int isMC=0, Double_t luminosity=26., int doweight=0, TString collsyst="PbPb", TString outputfile="mytest.root")
 {
   collisionsystem=collsyst;
   seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
@@ -47,9 +47,9 @@ void fitD(TString inputdata, TString inputmc, TString trgselection,  TString cut
   TTree* ntMC = (TTree*)infMC->Get("ntDkpi");
   TTree* ntGen = (TTree*)infMC->Get("ntGen");
   TTree* MCHltTree;
- // if (collisionsystem=="PP") MCHltTree= (TTree*)infMC->Get("ntHlt");
- // else MCHltTree= (TTree*)infMC->Get("HltTree");
-  MCHltTree= (TTree*)infMC->Get("HltTree");
+  //if (collisionsystem=="PP") MCHltTree= (TTree*)infMC->Get("ntHlt");
+  //else MCHltTree= (TTree*)infMC->Get("HltTree");
+  MCHltTree= (TTree*)infMC->Get("ntHlt");
 
   ntGen->AddFriend(ntMC);
   MCHltTree->AddFriend(ntMC);
