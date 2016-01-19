@@ -18,7 +18,7 @@ TString seldata;
 TString selmc;
 TString collisionsystem;
 
-void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderData_pp_20160111_dPt0tkPt1_D0Dstar3p5p_DCSJSON_v2.root", TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160107_Dfinder_20151229_pp_Pythia8_prompt_D0pt30p0_Pthat30_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root", TString trgselection="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>25&&Dpt<40)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>40&&Dpt<60)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>60))",  TString cut="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5", TString selmcgen="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))", int isMC=0, Double_t luminosity=26., int doweight=0, TString collsyst="PbPb", TString outputfile="mytest.root")
+void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderData_pp_20160111_dPt0tkPt1_D0Dstar3p5p_DCSJSON_v2.root", TString inputmc="/afs/cern.ch/work/w/wangj/public/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pythia_D0pt15p0_Pthat15_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root", TString trgselection="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>25&&Dpt<40)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>40&&Dpt<60)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>60))",  TString cut="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5", TString selmcgen="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))", int isMC=0, Double_t luminosity=26., int doweight=0, TString collsyst="PbPb", TString outputfile="mytest.root")
 {
   collisionsystem=collsyst;
   seldata = Form("%s&&%s",trgselection.Data(),cut.Data());
@@ -49,10 +49,10 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   TTree* MCHltTree;
   //if (collisionsystem=="PP") MCHltTree= (TTree*)infMC->Get("ntHlt");
   //else MCHltTree= (TTree*)infMC->Get("HltTree");
-  MCHltTree= (TTree*)infMC->Get("ntHlt");
+  //MCHltTree= (TTree*)infMC->Get("ntHlt");
 
   ntGen->AddFriend(ntMC);
-  MCHltTree->AddFriend(ntMC);
+  //MCHltTree->AddFriend(ntMC);
   
   TH1D* hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D* hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);

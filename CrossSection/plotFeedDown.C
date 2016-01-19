@@ -344,7 +344,7 @@ double nonPromptJpsiRAAErrorSyst_2012[]  = {0.,0.04,0.05,0.05,0.06,0.07,0.07};
   TCanvas*cFractPP=new TCanvas("c","c",500,500);
   cFractPP->cd();
   hfractionPPnonpromp_rebin->SetMinimum(0);
-  hfractionPPnonpromp_rebin->SetMaximum(1.5);
+  hfractionPPnonpromp_rebin->SetMaximum(0.5);
   hfractionPPnonpromp_rebin->SetXTitle("D^{0} p_{T} (GeV/c)");
   hfractionPPnonpromp_rebin->SetYTitle("Non-prompt D fraction in PP ");
   hfractionPPnonpromp_rebin->Draw();
