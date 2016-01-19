@@ -7,6 +7,11 @@
 #include <TH2D.h>
 #include <TRandom2.h>
 #include <TExec.h>
+#include "parameters.h"
+
+
+using namespace std;
+
 void getMaximum(TH1D *hResult,TH1D *h)
 {
    for (int i=0;i<=hResult->GetNbinsX()+1;i++){
@@ -74,10 +79,10 @@ void reweighthisto(TH1D* hBPt, TH2D* h2D, TH1D *hRAA=0, bool weightByJpsiRAA=0, 
    delete htmp;
    
 }
-void plotFeedDown(int ntest=1, int centL=0,int centH=100)
+void plotFeedDown(TString inputDfile="output_pp_d0meson_5TeV_y1.root",TString inputBfile="output_pp_Bmeson_5TeV_y1.root", TString ntuplePythia="/data/HeavyFlavourRun2/BtoDPythia/treefile_ptall_11january2016.root", int ntest=1, int centL=0,int centH=100)
 {
    // B cross-section
-   TFile *inf = new TFile("output_pp_Bmeson_5TeV_y1.root");
+   TFile *inf = new TFile(inputBfile.Data());
 //   TFile *inf = new TFile("outputBplus_D_pp_rap24.root");
 //    TFile *inf = new TFile("outputBplus_pp.root");
    TH1D *hBPtMax = (TH1D*)inf->Get("hmaxall");
@@ -98,7 +103,7 @@ void plotFeedDown(int ntest=1, int centL=0,int centH=100)
    
    // D cross-section
 //   TFile *infD = new TFile("outputD0_D_pp.root");
-   TFile *infD = new TFile("output_pp_d0meson_5TeV_y1.root");
+   TFile *infD = new TFile(inputDfile.Data());
    TH1D *hDPtMax = (TH1D*)infD->Get("hmaxall");
    TH1D *hDPtMin = (TH1D*)infD->Get("hminall");
    TH1D *hDPt = (TH1D*)infD->Get("hpt");
@@ -115,7 +120,7 @@ void plotFeedDown(int ntest=1, int centL=0,int centH=100)
    hDPt->Scale(0.557);
 
    
-   TFile *inf2 = new TFile("/data/HeavyFlavourRun2/BtoDPythia/treefile_ptall_11january2016.root");
+   TFile *inf2 = new TFile(ntuplePythia.Data());
 //   TFile *inf2 = new TFile("test.root");
    TTree *hi = (TTree*) inf2->Get("ana/hi");
 
@@ -328,8 +333,24 @@ double nonPromptJpsiRAAErrorSyst_2012[]  = {0.,0.04,0.05,0.05,0.06,0.07,0.07};
    hBtoDTmp->SetXTitle("D^{0} p_{T} (GeV/c)");
    hBtoDTmp->SetYTitle("Non-prompt D fraction");
    hBtoDTmp->Draw();
+
+
+  TH1D *hDFromBPt= (TH1D*)hD->ProjectionY()->Clone("hDFromBPt");
+  TH1D* hDPt_central_rebin = (TH1D*)hDPt->Rebin(nBins,"hDPt_central_rebin",ptBins);
+  TH1D* BtoD_central_rebin = (TH1D*)hDFromBPt->Rebin(nBins,"BtoD_central_rebin",ptBins);
+  TH1D* hfractionPPnonpromp_rebin = (TH1D*)hDFromBPt->Rebin(nBins,"fraction_central_rebin",ptBins);
+  hfractionPPnonpromp_rebin->Divide(hDPt_central_rebin);
+  
+  TCanvas*cFractPP=new TCanvas("c","c",500,500);
+  cFractPP->cd();
+  hfractionPPnonpromp_rebin->SetMinimum(0);
+  hfractionPPnonpromp_rebin->SetMaximum(1.5);
+  hfractionPPnonpromp_rebin->SetXTitle("D^{0} p_{T} (GeV/c)");
+  hfractionPPnonpromp_rebin->SetYTitle("Non-prompt D fraction in PP ");
+  hfractionPPnonpromp_rebin->Draw();
+  cFractPP->SaveAs("cFractPP.pdf");
+
    
-   TH1D *hDFromBPt= (TH1D*)hD->ProjectionY()->Clone("hDFromBPt");
    TH1D *hDFromBPtMax= (TH1D*)hD->ProjectionY()->Clone("hDFromBPtMax");
    TH1D *hDFromBPtMin= (TH1D*)hD->ProjectionY()->Clone("hDFromBPtMin");
    
@@ -400,12 +421,26 @@ double nonPromptJpsiRAAErrorSyst_2012[]  = {0.,0.04,0.05,0.05,0.06,0.07,0.07};
    hDFromBPtMin->Write();
    hDFromBPtCentral->Write();
    hDFromBPt->Write();
+   hfractionPPnonpromp_rebin->Write();
    hJpsi->Write();
    hD->Write();
    hBPt->Write();
    hDPt->Write();   
    outf->Write();
-
    
-       
+
 }
+
+int main(int argc, char *argv[])
+{
+  if((argc != 7))
+  {
+    std::cout << "Wrong number of inputs" << std::endl;
+    return 1;
+  }
+  
+  if(argc == 7)
+    plotFeedDown(argv[1], argv[2], argv[3], atoi(argv[4]),atoi(argv[5]),atoi(argv[6]));
+  return 0;
+}
+

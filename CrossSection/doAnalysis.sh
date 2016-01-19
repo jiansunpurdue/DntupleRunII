@@ -2,10 +2,11 @@
 #source clean.sh
 DOFONLL=1
 DOTRGCOMBINATION=1
+DOFEEDDOWN=1
 DOFITSPP=1
-DOFITSPbPb=0
+DOFITSPbPb=1
 DOCrossSectionPP=1
-DORAA=0
+DORAA=1
 
 FONLLDATINPUT="pp_d0meson_5TeV_y1"
 FONLLDATINPUTBtoD="pp_Btod0meson_5TeV_y1"
@@ -14,6 +15,7 @@ FONLLOUTPUTFILE="output_pp_d0meson_5TeV_y1.root"
 FONLLOUTPUTFILEBtoD="output_pp_Btod0meson_5TeV_y1.root"
 FONLLOUTPUTFILEInclusiveD="output_inclusiveDd0meson_5TeV_y1.root"
 FONLLOUTPUTFILEB="output_pp_Bmeson_5TeV_y1.root"
+NTUPLAPYTHIA="/data/HeavyFlavourRun2/BtoDPythia/treefile_ptall_11january2016.root"
 
 LUMIPP=26.31
 INPUTMCPP="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8_prompt_D0pt30p0_Pthat30_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root"
@@ -27,7 +29,7 @@ LABELPP="PP"
 OUTPUTFILEPP="hPtSpectrumDzeroPP.root"
 
 
-INPUTMCPbPb="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160107_Dfinder_20151229_pp_Pythia8_prompt_D0pt30p0_Pthat30_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root"
+INPUTMCPbPb="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8_prompt_D0pt30p0_Pthat30_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root"
 INPUTDATAPbPb="/afs/cern.ch/work/g/ginnocen/HeavyFlavourRun2/crab_DfinderData_PbPb_20151227_dPt10tkPt2p5_D0Dstar3p5p_CameliaJSON/merged_ntuple.root"
 LUMIPbPb=0.000014930
 ISMCPbPb=0
@@ -51,10 +53,17 @@ g++ BplusAlldsigmadpt.cc $(root-config --cflags --libs) -g -o BplusAlldsigmadpt.
 ./BplusAlldsigmadpt.exe "$FONLLDATINPUTB"  "$FONLLOUTPUTFILEB" 
 fi 
 
-if [ $DOTRGCOMBINATION -eq 1 ]; then      
+if [ $DOFEEDDOWN -eq 1 ]; then      
 
-#g++ RatioFeedDown.cc $(root-config --cflags --libs) -g -o RatioFeedDown.exe 
-#./RatioFeedDown.exe "$FONLLOUTPUTFILE"  "$FONLLOUTPUTFILEBtoD" "$FONLLOUTPUTFILEInclusiveD"
+g++ RatioFeedDown.cc $(root-config --cflags --libs) -g -o RatioFeedDown.exe 
+./RatioFeedDown.exe "$FONLLOUTPUTFILE"  "$FONLLOUTPUTFILEBtoD" "$FONLLOUTPUTFILEInclusiveD"
+
+g++ plotFeedDown.C $(root-config --cflags --libs) -g -o plotFeedDown.exe 
+./plotFeedDown.exe "$FONLLOUTPUTFILE"  "$FONLLOUTPUTFILEB" "$NTUPLAPYTHIA" 1 0 100 
+
+fi
+
+if [ $DOTRGCOMBINATION -eq 1 ]; then      
 
 g++ triggercombination.cc $(root-config --cflags --libs) -g -o triggercombination.exe 
 ./triggercombination.exe "$LABELPP"  "$INPUTDATAPP" "$OUTPUTPrescalePP"
@@ -75,7 +84,7 @@ fi
 
 if [ $DOCrossSectionPP -eq 1 ]; then      
 g++ CrossSectionRatio.C $(root-config --cflags --libs) -g -o CrossSectionRatio.exe 
-./CrossSectionRatio.exe "$FONLLOUTPUTFILE"  "$OUTPUTFILEPP" "$OUTPUTPrescalePP"
+./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPP" "$OUTPUTPrescalePP"
 fi
 
 if [ $DORAA -eq 1 ]; then      
