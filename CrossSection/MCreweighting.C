@@ -18,8 +18,10 @@ TString weight = "(1)";
 TString seldata;
 TString selmc;
 TString collisionsystem;
-TString cut="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5";
+TString cut="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5&&abs(Dtrk1Eta)<2.4&&abs(Dtrk2Eta)<2.4";
+//TString cut="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5";
 TString cut_recoonly="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5";
+TString cut_acceptance="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))&&abs(Gtk1eta)<2.4&&abs(Gtk2eta)<2.4";
 //TString cut="Dy>-1.&&Dy<1.";
 TString selmcgen="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))";
 
@@ -35,7 +37,7 @@ void MCreweighting(){
   }
   TH1D* hFONLLOverPt=(TH1D*)hFONLL->Clone("hFONLLOverPt");
   TH1D* hFONLLOverPtWeight=(TH1D*)hFONLL->Clone("hFONLLOverPtWeight");
-  TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8_prompt_D0pt30p0_Pthat30_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root";
+  TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160118_Dfinder_20151229_pp_Pythia8_prompt_D0pt15p0_Pthat15_TuneCUETP8M1_5020GeV_evtgen130_GEN_SIM_20151212_dPt1tkPt1_D0Ds.root";
   //TString inputmc="/data/ginnocen/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8_prompt_D0_15_30_50merged.root";
   //TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160112_Dfinder_20151229_pp_Pythia8_prompt_D0_noweight.root";
   TString outputfile="testingWeight.root";
@@ -61,6 +63,7 @@ void MCreweighting(){
   TH1D* hPtMC = new TH1D("hPtMC","",nBins,ptBins);
   TH1D* hPtMCrecoonly = new TH1D("hPtMCrecoonly","",nBins,ptBins);
   TH1D* hPtGen = new TH1D("hPtGen","",nBins,ptBins);
+  TH1D* hPtGenAcc = new TH1D("hPtGenAcc","",nBins,ptBins);
     
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
   divideBinWidth(hPtMC);
@@ -68,7 +71,9 @@ void MCreweighting(){
   divideBinWidth(hPtMCrecoonly);
   ntGen->Project("hPtGen","Gpt",TCut(weight)*(TCut(selmcgen.Data())));
   divideBinWidth(hPtGen);
-  
+  ntGen->Project("hPtGenAcc","Gpt",TCut(weight)*(TCut(cut_acceptance.Data())));
+  divideBinWidth(hPtGenAcc);
+
   hFONLLOverPt->Divide(hPtGen);
   //TF1 *myfit = new TF1("myfit","[0]+x*[1]+x*x*[2]+x*x*x*[3]+x*x*x*x*[4]", 30, 100);
   TF1 *myfit = new TF1("myfit","[0]+x*[1]+x*x*[2]+x*x*x*[3]", 30, 100);
@@ -89,6 +94,15 @@ void MCreweighting(){
   hEffReco->SetTitle(";D^{0} p_{T} (GeV/c);Efficiency");
   hEffReco->Sumw2();
   hEffReco->Divide(hPtGen);
+
+
+  TH1D* hEffAcc = (TH1D*)hPtGenAcc->Clone("hEffAcc");
+  hEffAcc->SetMinimum(0);
+  hEffAcc->SetMaximum(1.5);
+  hEffAcc->SetTitle(";D^{0} p_{T} (GeV/c);Efficiency");
+  hEffAcc->Sumw2();
+  hEffAcc->Divide(hPtGen);
+  //hEffAcc->Divide(hEffAcc,hPtGen,1,1,"b");
 
   TH1D* hEffSelection = (TH1D*)hPtMC->Clone("hEffSelection");
   hEffSelection->SetMinimum(0);
@@ -185,16 +199,20 @@ void MCreweighting(){
   
   
   TCanvas*canvasEff=new TCanvas("canvasEff","canvasEff",1000.,400);
-  canvasEff->Divide(3,1);
+  canvasEff->Divide(2,2);
   canvasEff->cd(1);
+  hEffAcc->SetXTitle("Gen p_{T}");
+  hEffAcc->SetYTitle("#alpha");
+  hEffAcc->Draw();
+  canvasEff->cd(2);
   hEffReco->SetXTitle("Gen p_{T}");
   hEffReco->SetYTitle("#alpha x #epsilon_{reco}");
   hEffReco->Draw();
-  canvasEff->cd(2);
+  canvasEff->cd(3);
   hEffSelection->SetXTitle("Gen p_{T}");
   hEffSelection->SetYTitle("#epsilon_{sel}");
   hEffSelection->Draw();  
-  canvasEff->cd(3);
+  canvasEff->cd(4);
   hEff->SetXTitle("Gen p_{T}");
   hEff->SetYTitle("acceptance x #epsilon_{reco} x #epsilon_{sel} ");
   hEff->Draw();
