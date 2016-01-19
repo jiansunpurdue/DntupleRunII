@@ -19,6 +19,7 @@ TString seldata;
 TString selmc;
 TString collisionsystem;
 TString cut="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5";
+TString cut_recoonly="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5";
 //TString cut="Dy>-1.&&Dy<1.";
 TString selmcgen="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))";
 
@@ -58,10 +59,13 @@ void MCreweighting(){
   ntMC->AddFriend(ntGen);
   
   TH1D* hPtMC = new TH1D("hPtMC","",nBins,ptBins);
+  TH1D* hPtMCrecoonly = new TH1D("hPtMCrecoonly","",nBins,ptBins);
   TH1D* hPtGen = new TH1D("hPtGen","",nBins,ptBins);
     
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
   divideBinWidth(hPtMC);
+  ntMC->Project("hPtMCrecoonly","Dpt",TCut(weight)*(TCut(cut_recoonly.Data())&&"(Dgen==23333)"));
+  divideBinWidth(hPtMCrecoonly);
   ntGen->Project("hPtGen","Gpt",TCut(weight)*(TCut(selmcgen.Data())));
   divideBinWidth(hPtGen);
   
@@ -74,10 +78,25 @@ void MCreweighting(){
   hPtMC->Sumw2();
   TH1D* hEff = (TH1D*)hPtMC->Clone("hEff");
   hEff->SetMinimum(0);
-  hEff->SetMaximum(1.0);
+  hEff->SetMaximum(1.5);
   hEff->SetTitle(";D^{0} p_{T} (GeV/c);Efficiency");
   hEff->Sumw2();
   hEff->Divide(hPtGen);
+
+  TH1D* hEffReco = (TH1D*)hPtMCrecoonly->Clone("hEffReco");
+  hEffReco->SetMinimum(0);
+  hEffReco->SetMaximum(1.5);
+  hEffReco->SetTitle(";D^{0} p_{T} (GeV/c);Efficiency");
+  hEffReco->Sumw2();
+  hEffReco->Divide(hPtGen);
+
+  TH1D* hEffSelection = (TH1D*)hPtMC->Clone("hEffSelection");
+  hEffSelection->SetMinimum(0);
+  hEffSelection->SetMaximum(1.5);
+  hEffSelection->SetTitle(";D^{0} p_{T} (GeV/c);Efficiency");
+  hEffSelection->Sumw2();
+  hEffSelection->Divide(hPtMCrecoonly);
+
 
   //TString weightfunction=Form("(%f+%f*Gpt+%f*Gpt*Gpt+%f*Gpt*Gpt*Gpt+%f*Gpt*Gpt*Gpt*Gpt)",myfit->GetParameter(0),myfit->GetParameter(1),myfit->GetParameter(2),myfit->GetParameter(3),myfit->GetParameter(4));
   
@@ -164,11 +183,31 @@ void MCreweighting(){
   hratioweight->Draw("p");  
   canvas->SaveAs("MCreweighting.pdf");
   
+  
+  TCanvas*canvasEff=new TCanvas("canvasEff","canvasEff",1000.,400);
+  canvasEff->Divide(3,1);
+  canvasEff->cd(1);
+  hEffReco->SetXTitle("Gen p_{T}");
+  hEffReco->SetYTitle("#alpha x #epsilon_{reco}");
+  hEffReco->Draw();
+  canvasEff->cd(2);
+  hEffSelection->SetXTitle("Gen p_{T}");
+  hEffSelection->SetYTitle("#epsilon_{sel}");
+  hEffSelection->Draw();  
+  canvasEff->cd(3);
+  hEff->SetXTitle("Gen p_{T}");
+  hEff->SetYTitle("acceptance x #epsilon_{reco} x #epsilon_{sel} ");
+  hEff->Draw();
+
+  canvasEff->SaveAs("canvasEff.pdf");
+
+  
   TFile* outf = new TFile(outputfile.Data(),"recreate");
   outf->cd();
   hEff->Write();
   hPtGen->Write();
   hPtMC->Write();
+  hEffReco->Write();
   myfit->Write();
   outf->Close();
 }
