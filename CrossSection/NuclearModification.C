@@ -20,7 +20,10 @@ void NuclearModification(TString inputPP="hPtSpectrumDzeroPP.root", TString inpu
   TFile* filePbPb = new TFile(inputPbPb.Data());
   TH1F* hEffPbPb = (TH1F*)filePbPb->Get("hEff");
   TH1F* hRAA = (TH1F*)filePbPb->Get("hPtSigma");
+  TH1F* hSigmaPbPbStat = (TH1F*)hRAA->Clone("hSigmaPbPbStat");
   hRAA->SetName("hRAA");
+  hSigmaPbPbStat->SetName("hSigmaPbPbStat");
+  hSigmaPbPbStat->Scale(1./(208.*208.));
   hRAA->Divide(hSigmaPPStat);
   hRAA->Scale(1./(208.*208.));
   std::cout<<hRAA->GetBinContent(1)<<std::endl;
@@ -34,8 +37,26 @@ void NuclearModification(TString inputPP="hPtSpectrumDzeroPP.root", TString inpu
   }
 
   
-  TCanvas* cRAA = new TCanvas("cRAA","",600,500);
-  cRAA->cd();
+  TCanvas* cRAA = new TCanvas("cRAA","",1000,500);
+  cRAA->Divide(2,1);
+  cRAA->cd(1);
+  TH2F* hemptySigma=new TH2F("hemptySigma","",50,10.,110.,10.,0.11,10000.0);
+  hemptySigma->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+  hemptySigma->GetYaxis()->CenterTitle();
+  hemptySigma->GetYaxis()->SetTitle("R_{AA}");
+  hemptySigma->GetXaxis()->SetTitleOffset(1.0);
+  hemptySigma->GetYaxis()->SetTitleOffset(1.0);
+  hemptySigma->GetXaxis()->SetTitleSize(0.04);
+  hemptySigma->GetYaxis()->SetTitleSize(0.04);
+  hemptySigma->GetXaxis()->SetTitleFont(42);
+  hemptySigma->GetYaxis()->SetTitleFont(42);
+  hemptySigma->GetXaxis()->SetLabelFont(42);
+  hemptySigma->GetYaxis()->SetLabelFont(42);
+  hemptySigma->GetXaxis()->SetLabelSize(0.03);
+  hemptySigma->GetYaxis()->SetLabelSize(0.03);  
+  hemptySigma->Draw();
+  hSigmaPPStat->Draw("psame");
+  cRAA->cd(2);
   TH2F* hemptyRAA=new TH2F("hemptyRAA","",50,10.,110.,10.,0.,20.0);
   hemptyRAA->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyRAA->GetYaxis()->CenterTitle();
@@ -53,8 +74,6 @@ void NuclearModification(TString inputPP="hPtSpectrumDzeroPP.root", TString inpu
   hemptyRAA->Draw();
   hRAA->Draw("psame");
   cRAA->SaveAs("cRAA.pdf");
-
-
 
   TCanvas* cEffPbPb = new TCanvas("cEffPbPb","",600,500);
   cEffPbPb->cd();
