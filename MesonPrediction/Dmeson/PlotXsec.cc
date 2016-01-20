@@ -99,7 +99,7 @@ void PlotXsec(){
 	dXsec->SetLineColor(4);
 	dXsec->Draw("p same");
 
-    TH2F* hempty2=new TH2F("hempty2","",1,0,100,10.,1e5,1e11);
+    TH2F* hempty2=new TH2F("hempty2","",1,0,100,10.,1e4,1e10);
 	hempty2->SetTitle("# of produced D0 meson");
 	hempty2->GetXaxis()->SetTitle("D0 pt [GeV]");
     hempty2->Draw();
