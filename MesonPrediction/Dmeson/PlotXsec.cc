@@ -74,7 +74,7 @@ void PlotXsec(){
 		aerrorl[i] = 0;
 		aerrorh[i] = 0;
 
-		genB[i] = 0.5 * 2 * 500e-6*10 * 208*208 * diffXsec * Fraction * (bins[i+1]-bins[i]) * ratioDataDrivenVSFONLL[i] / HLTprescale2015[i];//2-15 expected PbPb = 0.5ub-1
+		genB[i] = 0.5 * 2 * 500e-6 * 208*208 * diffXsec * Fraction * (bins[i+1]-bins[i]) * ratioDataDrivenVSFONLL[i] / HLTprescale2015[i];//2015 expected PbPb = 500ub-1
 		aerrorl2[i] = 0;
 		aerrorh2[i] = 0;
 		cout<<"genB: "<<genB[i]<<endl;
@@ -112,7 +112,7 @@ void PlotXsec(){
     leg->SetBorderSize(0);
 	leg->SetTextSize(0.05);
     leg->AddEntry(GenB,"PbPb #sqrt{s_{NN}}= 5.02 TeV","l");
-    leg->AddEntry((TObject*)0,"Lumi = 0.5ub-1","");
+    leg->AddEntry((TObject*)0,"Lumi = 500ub-1","");
 	leg->Draw();
 	cr->SaveAs("Plots/GenD.png");
 
