@@ -1,12 +1,21 @@
 
-const int nBins=8;
-double ptBins[nBins+1] = {20.,25.,30.,35.,40.,45.,50.,60.,100.};
+const int nBins=9;
+double ptBins[nBins+1] = {5.,8.,10.,12, 15.,18, 20, 25.,30.,50.};
 const int ntriggers=3;
 TString triggerHLTPP[ntriggers]={"HLT_DmesonPPTrackingGlobal_Dpt15_v1","HLT_DmesonPPTrackingGlobal_Dpt30_v1","HLT_DmesonPPTrackingGlobal_Dpt50_v1"};
-int triggerassignmentPP[nBins]= {0,0,0,0,1,1,1,2};
+int triggerassignmentPP[nBins]= {0,0,0,0,1,1,1,2,2};
 TString triggerHLTPbPb[ntriggers]={"HLT_HIDmesonHITrackingGlobal_Dpt20_v1","HLT_HIDmesonHITrackingGlobal_Dpt40_v1","HLT_HIDmesonHITrackingGlobal_Dpt60_v1"};
-int triggerassignmentPbPb[nBins]= {0,0,0,0,0,0,1,1};
+int triggerassignmentPbPb[nBins]= {0,0,0,0,0,0,1,1,2};
 
+/*
+const int nBins=2;
+double ptBins[nBins+1] = {60.,80.,100.};
+const int ntriggers=3;
+TString triggerHLTPP[ntriggers]={"HLT_DmesonPPTrackingGlobal_Dpt15_v1","HLT_DmesonPPTrackingGlobal_Dpt30_v1","HLT_DmesonPPTrackingGlobal_Dpt50_v1"};
+int triggerassignmentPP[nBins]= {2,2};
+TString triggerHLTPbPb[ntriggers]={"HLT_HIDmesonHITrackingGlobal_Dpt20_v1","HLT_HIDmesonHITrackingGlobal_Dpt40_v1","HLT_HIDmesonHITrackingGlobal_Dpt60_v1"};
+int triggerassignmentPbPb[nBins]= {2,2};
+*/
 /*
 const int nBins=4;
 double ptBins[nBins+1] = {15.,20.,30.,40.,60.};
@@ -30,8 +39,6 @@ int triggerassignmentPP[nBins]= {0,0,0,0,0,0,0,0,0};
 TString triggerHLTPbPb[ntriggers]={"HLT_HIDmesonHITrackingGlobal_Dpt20_v1"};
 int triggerassignmentPbPb[nBins]= {0,0,0,0,0,0,0,0,0};
 */
-
-
 /*
 //ATLAS binning for pp 7 TeV for D*
 const int nBins=9;

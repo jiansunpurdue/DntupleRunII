@@ -3,9 +3,11 @@
 DOFONLL=1
 DOTRGCOMBINATION=1
 DOFEEDDOWN=1
-DOFITSPP=1
+DOFITSPP=0
+DOFITSPPMB=1
 DOFITSPbPb=0
-DOCrossSectionPP=1
+DOCrossSectionPP=0
+DOCrossSectionPPMB=1
 DORAA=0
 
 FONLLDATINPUT="pp_d0meson_5TeV_y1"
@@ -27,6 +29,19 @@ SELGENPP="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))"
 TRGPP="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>15&&Dpt<40)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>40&&Dpt<60)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>60))"
 LABELPP="PP"
 OUTPUTFILEPP="hPtSpectrumDzeroPP.root"
+USEPRESCALEPP=1
+                                         
+LUMIPPMB=0.0047         #assuming sigma=70mb, Nevents=367 millions, estimated MB efficiency=0.90  Lumi=0.367*10^9/(70*10^9pb)=0.367/70*0.9=0.0047
+INPUTMCPPMB="/afs/cern.ch/work/w/wangj/public/Dmeson/ntD_20150924_MC_merge_withoutweight_skim.root"
+INPUTDATAPPMB="/data/yjlee/dmeson/2015/trigger/mb.root"
+ISMCPPMB=0
+ISDOWEIGHTPPMB=1
+CUTPPMB="Dy>-1.&&Dy<1.&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5"
+SELGENPPMB="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))"
+TRGPPMB="(HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_L1MinimumBiasHF1OR_part3_v1||HLT_L1MinimumBiasHF1OR_part4_v1||HLT_L1MinimumBiasHF1OR_part5_v1||HLT_L1MinimumBiasHF1OR_part6_v1||HLT_L1MinimumBiasHF1OR_part7_v1||HLT_L1MinimumBiasHF1OR_part8_v1||HLT_L1MinimumBiasHF1OR_part9_v1||HLT_L1MinimumBiasHF1OR_part10_v1||HLT_L1MinimumBiasHF1OR_part11_v1||HLT_L1MinimumBiasHF1OR_part12_v1||HLT_L1MinimumBiasHF1OR_part13_v1||HLT_L1MinimumBiasHF1OR_part14_v1||HLT_L1MinimumBiasHF1OR_part15_v1||HLT_L1MinimumBiasHF1OR_part16_v1||HLT_L1MinimumBiasHF1OR_part17_v1||HLT_L1MinimumBiasHF1OR_part18_v1||HLT_L1MinimumBiasHF1OR_part19_v1)"
+LABELPPMB="PPMB"
+OUTPUTFILEPPMB="hPtSpectrumDzeroPPMB.root"
+USEPRESCALEPPMB=0
 
 
 INPUTMCPbPb="/afs/cern.ch/work/w/wangj/public/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pythia_D0pt15p0_Pthat15_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root"
@@ -77,6 +92,12 @@ g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe
 ./fitD.exe "$INPUTDATAPP"  "$INPUTMCPP"  "$TRGPP" "$CUTPP"   "$SELGENPP"   "$ISMCPP"   "$LUMIPP"   "$ISDOWEIGHTPP"   "$LABELPP"  "$OUTPUTFILEPP"
 fi
 
+if [ $DOFITSPPMB -eq 1 ]; then      
+g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe 
+./fitD.exe "$INPUTDATAPPMB"  "$INPUTMCPPMB"  "$TRGPPMB" "$CUTPPMB"   "$SELGENPPMB"   "$ISMCPPMB"   "$LUMIPPMB"   "$ISDOWEIGHTPPMB"   "$LABELPPMB"  "$OUTPUTFILEPPMB"
+fi
+
+
 if [ $DOFITSPbPb -eq 1 ]; then      
 g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe 
 ./fitD.exe "$INPUTDATAPbPb"  "$INPUTMCPbPb"  "$TRGPbPb" "$CUTPbPb"   "$SELGENPbPb"   "$ISMCPbPb"   "$LUMIPbPb"   "$ISDOWEIGHTPbPb"  "$LABELPbPb"  "$OUTPUTFILEPbPb"
@@ -84,8 +105,14 @@ fi
 
 if [ $DOCrossSectionPP -eq 1 ]; then      
 g++ CrossSectionRatio.C $(root-config --cflags --libs) -g -o CrossSectionRatio.exe 
-./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPP" "$OUTPUTPrescalePP"
+./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPP" "$OUTPUTPrescalePP" "$USEPRESCALEPP"
 fi
+
+if [ $DOCrossSectionPPMB -eq 1 ]; then      
+g++ CrossSectionRatio.C $(root-config --cflags --libs) -g -o CrossSectionRatio.exe 
+./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPPMB" "$OUTPUTPrescalePP" "$USEPRESCALEPPMB"
+fi
+
 
 if [ $DORAA -eq 1 ]; then      
 g++ NuclearModification.C $(root-config --cflags --libs) -g -o NuclearModification.exe 
