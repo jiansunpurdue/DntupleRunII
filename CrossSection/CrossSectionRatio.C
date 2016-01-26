@@ -3,7 +3,7 @@
 #include "TLegendEntry.h"
 
 
-void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TString inputPP="hPtSpectrumDzeroPP.root", TString inputprescalesPP="prescalePP.root")
+void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TString inputPP="hPtSpectrumDzeroPP.root", TString inputprescalesPP="prescalePP.root",int usePrescaleCorr=1)
 {
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -19,10 +19,11 @@ void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TStr
   TFile*fprescalesPP=new TFile(inputprescalesPP.Data());
   
   TH1F*hPrescalesPtBinsPP=(TH1F*)fprescalesPP->Get("hPrescalesPtBins");
-  for (int i=0;i<nBins;i++) {
-    hSigmaPPStat->SetBinContent(i+1,hSigmaPPStat->GetBinContent(i+1)/hPrescalesPtBinsPP->GetBinContent(i+1));
+  if (usePrescaleCorr==1){
+    for (int i=0;i<nBins;i++) {
+      hSigmaPPStat->SetBinContent(i+1,hSigmaPPStat->GetBinContent(i+1)/hPrescalesPtBinsPP->GetBinContent(i+1));
+    }
   }
-
   Double_t xr[nBins], yr[nBins], xrlow[nBins], yrlow[nBins],xrhigh[nBins],yrhigh[nBins];
   Double_t yf[nBins], yflow[nBins],yfhigh[nBins];
   for(int i=0;i<nBins;i++)
@@ -75,7 +76,7 @@ void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TStr
   pSigma->Draw();
   pSigma->cd();
 
-  TH2F* hemptySigma=new TH2F("hemptySigma","",50,10.,110.,10.,1.1e-2,1.e6);  
+  TH2F* hemptySigma=new TH2F("hemptySigma","",50,0.,110.,10.,1.1e-2,1.e6);  
   hemptySigma->GetXaxis()->CenterTitle();
   hemptySigma->GetYaxis()->CenterTitle();
   hemptySigma->GetYaxis()->SetTitle("d#sigma / dp_{T}( pb GeV^{-1}c)");
@@ -136,7 +137,7 @@ void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TStr
   pRatio->Draw();
   pRatio->cd();
 
-  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,10.,110.,10.,0.5,3.0);
+  TH2F* hemptyRatio=new TH2F("hemptyRatio","",50,0.,110.,10.,0.,3.0);
   hemptyRatio->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptyRatio->GetYaxis()->CenterTitle();
   hemptyRatio->GetYaxis()->SetTitle("Data / FONLL");
@@ -163,7 +164,7 @@ void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TStr
   
   TCanvas* cEffPP = new TCanvas("cEffPP","",600,500);
   
-  TH2F* hemptyEff=new TH2F("hemptyEff","",50,10.,110.,10.,0,1.);  
+  TH2F* hemptyEff=new TH2F("hemptyEff","",50,0.,110.,10.,0,1.);  
   hemptyEff->GetXaxis()->CenterTitle();
   hemptyEff->GetYaxis()->CenterTitle();
   hemptyEff->GetYaxis()->SetTitle("efficiency");
@@ -192,14 +193,14 @@ void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TStr
 
 int main(int argc, char *argv[])
 {
-  if((argc != 4))
+  if((argc != 5))
   {
     std::cout << "Wrong number of inputs" << std::endl;
     return 1;
   }
   
-  if(argc == 4)
-    CrossSectionRatio(argv[1], argv[2], argv[3]);
+  if(argc == 5)
+    CrossSectionRatio(argv[1], argv[2], argv[3],atoi(argv[4]));
   return 0;
 }
 
