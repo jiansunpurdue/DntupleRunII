@@ -3,7 +3,7 @@
 #include "TLegendEntry.h"
 
 
-void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TString inputPP="hPtSpectrumDzeroPP.root", TString inputprescalesPP="prescalePP.root",int usePrescaleCorr=1)
+void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TString inputPP="hPtSpectrumDzeroPP.root", TString inputprescalesPP="prescalePP.root",int usePrescaleCorr=1,TString outputplot="myplot.root",TString label="PP")
 {
   gStyle->SetOptTitle(0);
   gStyle->SetOptStat(0);
@@ -16,14 +16,14 @@ void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TStr
   TFile* filePP = new TFile(inputPP.Data());
   TH1F* hEffPP = (TH1F*)filePP->Get("hEff");
   TH1F* hSigmaPPStat = (TH1F*)filePP->Get("hPtSigma");
-  TFile*fprescalesPP=new TFile(inputprescalesPP.Data());
-  
-  TH1F*hPrescalesPtBinsPP=(TH1F*)fprescalesPP->Get("hPrescalesPtBins");
   if (usePrescaleCorr==1){
+    TFile*fprescalesPP=new TFile(inputprescalesPP.Data()); 
+    TH1F*hPrescalesPtBinsPP=(TH1F*)fprescalesPP->Get("hPrescalesPtBins");
     for (int i=0;i<nBins;i++) {
       hSigmaPPStat->SetBinContent(i+1,hSigmaPPStat->GetBinContent(i+1)/hPrescalesPtBinsPP->GetBinContent(i+1));
     }
   }
+
   Double_t xr[nBins], yr[nBins], xrlow[nBins], yrlow[nBins],xrhigh[nBins],yrhigh[nBins];
   Double_t yf[nBins], yflow[nBins],yfhigh[nBins];
   for(int i=0;i<nBins;i++)
@@ -159,7 +159,7 @@ void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TStr
   gaeRatioFo->Draw("5same");
   gaeRatio->Draw("epsame");
   l->Draw("same");
-  cSigma->SaveAs("canvasSigmaDzeroRatio.pdf");
+  cSigma->SaveAs(Form("canvasSigmaDzeroRatio%s.pdf",label.Data()));
   
   
   TCanvas* cEffPP = new TCanvas("cEffPP","",600,500);
@@ -186,21 +186,26 @@ void CrossSectionRatio(TString inputFONLL="output_pp_d0meson_5TeV_y1.root", TStr
   cEffPP->cd();
   hemptyEff->Draw();
   hEffPP->Draw("same");
-  cEffPP->SaveAs("efficiencyPP.pdf");
+  cEffPP->SaveAs(Form("efficiency%s.pdf",label.Data()));
 
+  TFile *outputfile=new TFile(outputplot.Data(),"recreate");
+  outputfile->cd();
+  gaeRatio->Write();
+  gaeBplusReference->Write();
+  hSigmaPPStat->Write();
 }
 
 
 int main(int argc, char *argv[])
 {
-  if((argc != 5))
+  if((argc != 7))
   {
     std::cout << "Wrong number of inputs" << std::endl;
     return 1;
   }
   
-  if(argc == 5)
-    CrossSectionRatio(argv[1], argv[2], argv[3],atoi(argv[4]));
+  if(argc == 7)
+    CrossSectionRatio(argv[1], argv[2], argv[3],atoi(argv[4]),argv[5],argv[6]);
   return 0;
 }
 

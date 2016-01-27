@@ -3,12 +3,13 @@
 DOFONLL=1
 DOTRGCOMBINATION=1
 DOFEEDDOWN=1
-DOFITSPP=0
-DOFITSPPMB=1
-DOFITSPbPb=0
-DOCrossSectionPP=0
-DOCrossSectionPPMB=1
-DORAA=0
+DOFITSPP=1
+DOFITSPPMB=0
+DOFITSPbPb=1
+DOCrossSectionPP=1
+DOCrossSectionPPMB=0
+DOCrossSectionPbPb=1
+DORAA=1
 
 FONLLDATINPUT="pp_d0meson_5TeV_y1"
 FONLLDATINPUTBtoD="pp_Btod0meson_5TeV_y1"
@@ -20,19 +21,20 @@ FONLLOUTPUTFILEB="output_pp_Bmeson_5TeV_y1.root"
 NTUPLAPYTHIA="/data/HeavyFlavourRun2/BtoDPythia/treefile_ptall_11january2016.root"
 
 LUMIPP=26.31
-INPUTMCPP="/afs/cern.ch/work/w/wangj/public/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pythia_D0pt15p0_Pthat15_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root"
+INPUTMCPP="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_withweight.root"
 INPUTDATAPP="/data/dmeson2015/DataDntuple/nt_20160112_DfinderData_pp_20160111_dPt0tkPt1_D0Dstar3p5p_DCSJSON_v2.root"
 ISMCPP=0
 ISDOWEIGHTPP=1
 CUTPP="Dy>-1.&&Dy<1.&&(Dtrk1highPurity&&Dtrk2highPurity)&&(DsvpvDistance/DsvpvDisErr)>3.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1Pt>1.5&&Dtrk2Pt>1.5"
 SELGENPP="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))"
-TRGPP="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>15&&Dpt<40)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>40&&Dpt<60)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>60))"
+TRGPP="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>20&&Dpt<40)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>40&&Dpt<60)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>60))"
 LABELPP="PP"
 OUTPUTFILEPP="hPtSpectrumDzeroPP.root"
 USEPRESCALEPP=1
+OUTPUTFILEPlotPP="CrossSectionFONLLPP.root"
                                          
-LUMIPPMB=0.0047         #assuming sigma=70mb, Nevents=367 millions, estimated MB efficiency=0.90  Lumi=0.367*10^9/(70*10^9pb)=0.367/70*0.9=0.0047
-INPUTMCPPMB="/afs/cern.ch/work/w/wangj/public/Dmeson/ntD_20150924_MC_merge_withoutweight_skim.root"
+LUMIPPMB=0.0047         #assuming sigma=70mb, Nevents=347 millions, estimated MB efficiency=0.90  Lumi=0.347*10^9/(70*10^9pb)=0.347/70*0.9=0.0047
+INPUTMCPPMB="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_withweight.root"
 INPUTDATAPPMB="/data/yjlee/dmeson/2015/trigger/mb.root"
 ISMCPPMB=0
 ISDOWEIGHTPPMB=1
@@ -42,18 +44,22 @@ TRGPPMB="(HLT_L1MinimumBiasHF1OR_part1_v1||HLT_L1MinimumBiasHF1OR_part2_v1||HLT_
 LABELPPMB="PPMB"
 OUTPUTFILEPPMB="hPtSpectrumDzeroPPMB.root"
 USEPRESCALEPPMB=0
+OUTPUTFILEPlotPPMB="CrossSectionFONLLPPMB.root"
 
 
-INPUTMCPbPb="/afs/cern.ch/work/w/wangj/public/Dmeson/ntD_20151110_DfinderMC_20151110_EvtMatching_Pythia_D0pt15p0_Pthat15_TuneZ2_5020GeV_GENSIM_75x_1015_20151110_ppGlobaTrackingPPmenuHFlowpuv11_MBseed_twang-Pythia_1107.root"
-INPUTDATAPbPb="/data/HeavyFlavourRun2/crab_DfinderData_PbPb_20151227_dPt10tkPt2p5_D0Dstar3p5p_CameliaJSON/merged_ntuple.root"
-LUMIPbPb=0.000014930
+INPUTMCPbPb="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_withweight.root"
+INPUTDATAPbPb="/data/dmeson2015/DataDntuple/nt_skimmed_DfinderData_PbPb_20160126_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON_v6_partialstats_v2.root"
+LUMIPbPb=0.000404 #404*0.001*0.001
 ISMCPbPb=0
 ISDOWEIGHTPbPb=1
 CUTPbPb="Dy>-1.&&Dy<1.&&(Dtrk1Pt>8.5&&Dtrk2Pt>8.5)&&((Dpt<20&&(DsvpvDistance/DsvpvDisErr)>4.50&&Dchi2cl>0.05&&Dalpha<0.12)||(Dpt>20&&Dpt<40&&(DsvpvDistance/DsvpvDisErr)>2.5&&Dchi2cl>0.2&&Dalpha<0.12)||(Dpt>40&&(DsvpvDistance/DsvpvDisErr)>2.5&&Dchi2cl>0.05&&Dalpha<0.12))"
 SELGENPbPb="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))"
-TRGPbPb="((HLT_HIDmesonHITrackingGlobal_Dpt20_v1&&Dpt>20&&Dpt<50)||(HLT_HIDmesonHITrackingGlobal_Dpt40_v1&&Dpt>50&&Dpt<70)||(HLT_HIDmesonHITrackingGlobal_Dpt60_v1&&Dpt>70))"
+TRGPbPb="((HLT_HIDmesonHITrackingGlobal_Dpt20_v1&&Dpt>20&&Dpt<45)||(HLT_HIDmesonHITrackingGlobal_Dpt40_v1&&Dpt>45&&Dpt<70)||(HLT_HIDmesonHITrackingGlobal_Dpt60_v1&&Dpt>70))"
 LABELPbPb="PbPb"
 OUTPUTFILEPbPb="hPtSpectrumDzeroPbPb.root"
+USEPRESCALEPbPb=1
+OUTPUTFILEPlotPbPb="CrossSectionFONLLPbPb.root"
+
 
 OUTPUTPrescalePP="prescalePP.root"
 OUTPUTPrescalePbPb="prescalePbPb.root"
@@ -105,18 +111,23 @@ fi
 
 if [ $DOCrossSectionPP -eq 1 ]; then      
 g++ CrossSectionRatio.C $(root-config --cflags --libs) -g -o CrossSectionRatio.exe 
-./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPP" "$OUTPUTPrescalePP" "$USEPRESCALEPP"
+./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPP" "$OUTPUTPrescalePP" "$USEPRESCALEPP" "$OUTPUTFILEPlotPP" "$LABELPP"
+fi
+
+if [ $DOCrossSectionPbPb -eq 1 ]; then      
+g++ CrossSectionRatio.C $(root-config --cflags --libs) -g -o CrossSectionRatio.exe 
+./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPbPb" "$OUTPUTPrescalePbPb" "$USEPRESCALEPbPb" "$OUTPUTFILEPlotPbPb" "$LABELPbPb"
 fi
 
 if [ $DOCrossSectionPPMB -eq 1 ]; then      
 g++ CrossSectionRatio.C $(root-config --cflags --libs) -g -o CrossSectionRatio.exe 
-./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPPMB" "$OUTPUTPrescalePP" "$USEPRESCALEPPMB"
+./CrossSectionRatio.exe "$FONLLOUTPUTFILEInclusiveD"  "$OUTPUTFILEPPMB" "$OUTPUTPrescalePP" "$USEPRESCALEPPMB" "$OUTPUTFILEPlotPPMB" "$LABELPPMB"
 fi
 
 
 if [ $DORAA -eq 1 ]; then      
-g++ NuclearModification.C $(root-config --cflags --libs) -g -o NuclearModification.exe 
-./NuclearModification.exe "$OUTPUTFILEPP" "$OUTPUTFILEPbPb" "$OUTPUTPrescalePP" "$OUTPUTPrescalePbPb"
+g++ NuclearModificationFactor.C $(root-config --cflags --libs) -g -o NuclearModificationFactor.exe 
+./NuclearModificationFactor.exe "$OUTPUTFILEPlotPP" "$OUTPUTFILEPlotPbPb" 
 fi
 
 

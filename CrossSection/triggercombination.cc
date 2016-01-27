@@ -6,11 +6,11 @@
 using namespace std;
 
 
-void triggercombination(TString ispp="PP",TString inputdata="/data/HeavyFlavourRun2/DfinderData_pp_20151218_dPt0tkPt1_D0Dstar3p5p/merged_ntuple.root",TString output="output.root"){
+void triggercombination(TString ispp="PbPb",TString inputdata="/data/dmeson2015/DataDntuple/nt_skimmed_DfinderData_PbPb_20160126_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON_v6_partialstats.root",TString output="output.root"){
 
   TFile* inf = new TFile(inputdata.Data());
   TTree* nt = (TTree*) inf->Get("ntDkpi");
-  TTree* HltTree = (TTree*) inf->Get("ntHlt");
+  TTree* HltTree= (TTree*) inf->Get("ntHlt");
   HltTree->AddFriend(nt);
   nt->AddFriend(HltTree);
 
@@ -45,8 +45,8 @@ void triggercombination(TString ispp="PP",TString inputdata="/data/HeavyFlavourR
   }
 
   for (int index=0; index<ntriggers;index++) nt->SetBranchAddress(triggerHLT[index].Data(),&triggervariable[index]);
-  //int nevents_total = nt->GetEntries();    
-  int nevents_total = 200000;
+  int nevents_total = nt->GetEntries();    
+  //int nevents_total = 1000000;
   for(int entry=0; entry<nevents_total; entry++){
     if((entry%10000)==0) printf("Loading event #%d of %d.\n",entry,nevents_total);
     nt->GetEntry(entry);
@@ -59,6 +59,7 @@ void triggercombination(TString ispp="PP",TString inputdata="/data/HeavyFlavourR
     for (int index=0; index<ntriggers;index++){
      prescale[index]=ncountersANDunprescaled[index]/ncounters[2];
      cout<<"------index------"<<endl;
+     cout<<"triggerHLT="<<triggerHLT[index]<<endl;
      cout<<"ncounters="<<ncounters[index]<<endl; 
      cout<<"ncountersANDunprescaled="<<ncountersANDunprescaled[index]<<endl; 
      cout<<"prescale="<<prescale[index]<<endl; 
