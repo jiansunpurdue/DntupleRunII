@@ -40,7 +40,7 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   TFile* infMC = new TFile(inputmc.Data());
 
   TTree* nt = (TTree*) inf->Get("ntDkpi");
-  TTree* HltTree = (TTree*) inf->Get("ntHlt");
+  TTree* HltTree= (TTree*) inf->Get("ntHlt");
   HltTree->AddFriend(nt);
   nt->AddFriend(HltTree);
   
@@ -279,6 +279,8 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   
   Double_t yield = mass->Integral(minhisto,maxhisto)/binwidthmass;
   Double_t yieldErr = mass->Integral(minhisto,maxhisto)/binwidthmass*mass->GetParError(0)/mass->GetParameter(0);
+  
+  std::cout<<"YIELD="<<yield<<std::endl;
 
   TLegend* leg = new TLegend(0.65,0.58,0.82,0.88,NULL,"brNDC");
   leg->SetBorderSize(0);
