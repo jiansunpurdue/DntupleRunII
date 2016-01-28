@@ -4,6 +4,6 @@ rm *.eps
 rm *.pdf
 #rm *.root
 rm *.pcm
-rm *.root
+#rm *.root
 rm *.exe
 rm an.log
