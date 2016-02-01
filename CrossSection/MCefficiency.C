@@ -69,39 +69,48 @@ void MCefficiency(TString inputmc, TString selmcgen,TString selmcgenacceptance, 
   hEffSelection->Sumw2();
   hEffSelection->Divide(hEffSelection,hPtMCrecoonly,1,1,"b");
   
+  TH2F* hemptyEff=new TH2F("hemptyEff","",50,10.,120.,10.,0,1.5);  
+  hemptyEff->GetXaxis()->CenterTitle();
+  hemptyEff->GetYaxis()->CenterTitle();
+  hemptyEff->GetYaxis()->SetTitle("acceptance x #epsilon_{reco} x #epsilon_{sel} ");
+  hemptyEff->GetXaxis()->SetTitle("p_{T} (GeV/c)");
+  hemptyEff->GetXaxis()->SetTitleOffset(0.9);
+  hemptyEff->GetYaxis()->SetTitleOffset(0.95);
+  hemptyEff->GetXaxis()->SetTitleSize(0.05);
+  hemptyEff->GetYaxis()->SetTitleSize(0.05);
+  hemptyEff->GetXaxis()->SetTitleFont(42);
+  hemptyEff->GetYaxis()->SetTitleFont(42);
+  hemptyEff->GetXaxis()->SetLabelFont(42);
+  hemptyEff->GetYaxis()->SetLabelFont(42);
+  hemptyEff->GetXaxis()->SetLabelSize(0.035);
+  hemptyEff->GetYaxis()->SetLabelSize(0.035);  
+  hemptyEff->SetMaximum(2);
+  hemptyEff->SetMinimum(0.);
+  hemptyEff->Draw();
+
+  TH2F* hemptyEffAcc=(TH2F*)hemptyEff->Clone("hemptyEffAcc");
+  TH2F* hemptyEffReco=(TH2F*)hemptyEff->Clone("hemptyEffReco");
+  TH2F* hemptyEffSelection=(TH2F*)hemptyEff->Clone("hemptyEffSelection");
   
-  TCanvas*canvasEff=new TCanvas("canvasEff","canvasEff",1000.,1000);
+  TCanvas*canvasEff=new TCanvas("canvasEff","canvasEff",1100.,1000);
   canvasEff->Divide(2,2);
   canvasEff->cd(1);
   
-  hEffAcc->SetXTitle("Gen D p_{T}");
-  hEffAcc->SetYTitle("#alpha");
-  hEffAcc->SetMinimum(0);
-  hEffAcc->SetMaximum(1.5);
-  hEffAcc->GetYaxis()->SetTitleOffset(1.2);
-  hEffAcc->Draw();
+  hemptyEffAcc->SetYTitle("#alpha");
+  hemptyEffAcc->Draw();
+  hEffAcc->Draw("same");
   canvasEff->cd(2);
-  hEffReco->SetMinimum(0);
-  hEffReco->SetMaximum(1.5);
-  hEffReco->SetXTitle("D p_{T}");
-  hEffReco->SetYTitle("#alpha x #epsilon_{reco}");
   hEffReco->GetYaxis()->SetTitleOffset(1.2);
-  hEffReco->Draw();
+  hemptyEffReco->SetYTitle("#alpha x #epsilon_{reco} ");
+  hemptyEffReco->Draw();
+  hEffReco->Draw("same");
   canvasEff->cd(3);
-  hEffSelection->SetMinimum(0);
-  hEffSelection->SetMaximum(1.5);
-  hEffSelection->SetXTitle("D p_{T}");
-  hEffSelection->SetYTitle("#epsilon_{sel}");
-  hEffSelection->GetYaxis()->SetTitleOffset(1.2);
-  hEffSelection->Draw();  
+  hemptyEffSelection->SetYTitle(" #epsilon_{sel}");
+  hemptyEffSelection->Draw();  
+  hEffSelection->Draw("same");  
   canvasEff->cd(4);
-  hEff->SetMinimum(0);
-  hEff->SetMaximum(1.5);
-  hEff->Sumw2();
-  hEff->SetXTitle("D p_{T}");
-  hEff->SetYTitle("acceptance x #epsilon_{reco} x #epsilon_{sel} ");
-  hEff->GetYaxis()->SetTitleOffset(1.2);
-  hEff->Draw();
+  hemptyEff->Draw();
+  hEff->Draw("same");
   canvasEff->SaveAs(Form("canvasEff_study%s.pdf",Form(label.Data())));
 
 }
