@@ -5,7 +5,3 @@ cp "$INPUTFILE" "$OUTPUTFILE"
 g++ weighPthat.C $(root-config --cflags --libs) -g -o weighPthat.exe 
 ./weighPthat.exe "$INPUTFILE" "$OUTPUTFILE"
 rm weighPthat.exe
-
-#g++ checkweightResult.C $(root-config --cflags --libs) -g -o checkweightResult.exe 
-#./checkweightResult.exe "$OUTPUTFILE"
-#rm checkweightResult.exe
