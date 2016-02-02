@@ -6,7 +6,7 @@
 using namespace std;
 
 
-void triggercombination(TString ispp="PbPb",TString inputdata="/data/dmeson2015/DataDntuple/nt_skimmed_DfinderData_PbPb_20160126_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON_v6_partialstats.root",TString output="output.root"){
+void triggercombination(TString ispp="PP",TString inputdata="/data/dmeson2015/DataDntuple/nt_skimmed_DfinderData_PbPb_20160126_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON_v6_partialstats.root",TString output="outputtestpp.root"){
 
   TFile* inf = new TFile(inputdata.Data());
   TTree* nt = (TTree*) inf->Get("ntDkpi");
@@ -31,6 +31,7 @@ void triggercombination(TString ispp="PbPb",TString inputdata="/data/dmeson2015/
   int triggervariable[ntriggers];                    
   double ntriggerscounters[ntriggers];       
   double prescale[ntriggers];
+  double errorprescale[ntriggers];
   double nflag[ntriggers];               
   double ncounters[ntriggers];
   double ncountersANDunprescaled[ntriggers];
@@ -58,15 +59,20 @@ void triggercombination(TString ispp="PbPb",TString inputdata="/data/dmeson2015/
   }//end of for over events
     for (int index=0; index<ntriggers;index++){
      prescale[index]=ncountersANDunprescaled[index]/ncounters[2];
+     errorprescale[index]=1/ncounters[2]*TMath::Sqrt(ncountersANDunprescaled[index]*(1-(ncountersANDunprescaled[index]/ncounters[2])));
      cout<<"------index------"<<endl;
      cout<<"triggerHLT="<<triggerHLT[index]<<endl;
-     cout<<"ncounters="<<ncounters[index]<<endl; 
+     cout<<"nuprescaled="<<ncounters[2]<<endl; 
      cout<<"ncountersANDunprescaled="<<ncountersANDunprescaled[index]<<endl; 
      cout<<"prescale="<<prescale[index]<<endl; 
+     cout<<"error on prescale binomial="<<errorprescale[index]<<endl; 
+     cout<<"relative error on prescale binomial="<<errorprescale[index]/prescale[index]<<endl; 
+     
     }
     
     for (int index=0; index<nBins;index++){
      hPrescalesPtBins->SetBinContent(index+1,prescale[triggerassignment[index]]);
+     hPrescalesPtBins->SetBinError(index+1,errorprescale[triggerassignment[index]]);
     }
     hPrescalesPtBins->Draw();
     TFile*foutput=new TFile(output.Data(),"recreate");
