@@ -13,7 +13,7 @@ Double_t maxhisto=2.0;
 Double_t nbinsmasshisto=60;
 Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
-TString weight = "1";
+TString weight = "pthatweight";
 TString seldata;
 TString selmc;
 TString collisionsystem;
@@ -46,13 +46,13 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   
   TTree* ntMC = (TTree*)infMC->Get("ntDkpi");
   TTree* ntGen = (TTree*)infMC->Get("ntGen");
-  TTree* MCHltTree;
-  //if (collisionsystem=="PP") MCHltTree= (TTree*)infMC->Get("ntHlt");
-  //else MCHltTree= (TTree*)infMC->Get("HltTree");
-  //MCHltTree= (TTree*)infMC->Get("ntHlt");
-
+  TTree* ntHi = (TTree*)infMC->Get("ntHi");
+  
   ntGen->AddFriend(ntMC);
-  //MCHltTree->AddFriend(ntMC);
+  ntGen->AddFriend(ntHi);
+  ntMC->AddFriend(ntGen);
+  ntMC->AddFriend(ntHi);
+  ntHi->AddFriend(ntMC);
   
   TH1D* hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D* hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
@@ -150,7 +150,7 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   
   TF1* f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x", 1.7, 2.0);
   
-  nt->Project(Form("h-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  nt->Project(Form("h-%d",count),"Dmass",Form("(%s&&Dpt>%f&&Dpt<%f)",seldata.Data(),ptmin,ptmax));   
   ntMC->Project(Form("hMCSignal-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),selmc.Data(),ptmin,ptmax));   
   ntMC->Project(Form("hMCSwapped-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),selmc.Data(),ptmin,ptmax));   
 
