@@ -70,8 +70,8 @@ void NuclearModificationFactor(TString inputPP="CrossSectionFONLLPP.root", TStri
   hemptyEff->SetMinimum(0.);
   hemptyEff->Draw();
   gNuclearModification->SetFillColor(4);
-  gNuclearModification->SetFillStyle(3001); 
-  gNuclearModification->SetLineWidth(1);
+  gNuclearModification->SetFillStyle(0); 
+  gNuclearModification->SetLineWidth(3);
   gNuclearModification->SetLineColor(4);
   gNuclearModification->Draw("5same");
   hNuclearModification->SetLineWidth(3);
@@ -89,7 +89,7 @@ void NuclearModificationFactor(TString inputPP="CrossSectionFONLLPP.root", TStri
   tlatexeff2->SetTextFont(42);
   tlatexeff2->SetTextSize(0.038);
   tlatexeff2->Draw();
-  TLatex * tlatexeff3=new TLatex(0.1612903,0.7325793,"L^{pp}_{int} = 26.31pb^{-1}, L^{PbPb}_{int} = 404.4 #mub^{-1}");
+  TLatex * tlatexeff3=new TLatex(0.1612903,0.7325793,"L^{PbPb}_{int} = 404.4 #mub^{-1}");
   tlatexeff3->SetNDC();
   tlatexeff3->SetTextColor(1);
   tlatexeff3->SetTextFont(42);
