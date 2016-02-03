@@ -153,7 +153,13 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   nt->Project(Form("h-%d",count),"Dmass",Form("(%s&&Dpt>%f&&Dpt<%f)",seldata.Data(),ptmin,ptmax));   
   ntMC->Project(Form("hMCSignal-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),selmc.Data(),ptmin,ptmax));   
   ntMC->Project(Form("hMCSwapped-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),selmc.Data(),ptmin,ptmax));   
-
+  
+  TFile *fout=new TFile(Form("FitsFiles/Fits_%s_%d.root",collisionsystem.Data(),count),"recreate");
+  fout->cd();
+  hMCSignal->Write();
+  hMCSwapped->Write();
+  h->Write();  
+  
   f->SetParLimits(4,-1000,1000);
   f->SetParLimits(10,0.001,0.05);
   f->SetParLimits(2,0.01,0.1);
