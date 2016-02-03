@@ -25,11 +25,11 @@ void testFit(int count=1)
  Double_t ptmax=40;
 
   TCanvas* c= new TCanvas(Form("c%d",count),"",600,600);
-  TFile *file=new TFile(Form("InputFits/fout%d.root",count));
+  TFile *file=new TFile(Form("FitsFiles/Fits_PP_%d.root",count));
   TH1D* h = (TH1D*)file->Get(Form("h-%d",count));
   TH1D* hMCSignal = (TH1D*)file->Get(Form("hMCSignal-%d",count));
   TH1D* hMCSwapped = (TH1D*)file->Get(Form("hMCSwapped-%d",count));
-  
+    
   TF1* f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x", 1.7, 2.0);
 
   f->SetParLimits(4,-1000,1000);
@@ -56,11 +56,13 @@ void testFit(int count=1)
   
   hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   hMCSignal->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
+ 
   f->ReleaseParameter(1);
   hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   hMCSignal->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   hMCSignal->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
   
+
   f->FixParameter(1,f->GetParameter(1));
   f->FixParameter(2,f->GetParameter(2));
   f->FixParameter(10,f->GetParameter(10));
@@ -82,6 +84,17 @@ void testFit(int count=1)
   f->ReleaseParameter(6);
 
   f->SetLineColor(kRed);
+  
+
+  
+  TCanvas*mycanvas=new TCanvas("mycanvas","mycanvas",1000,500);
+  mycanvas->Divide(2,1);
+  mycanvas->cd(1);
+  hMCSignal->Draw();
+  mycanvas->cd(2);
+  hMCSwapped->Draw();
+  mycanvas->SaveAs("mycanvas.pdf");
+
   
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
