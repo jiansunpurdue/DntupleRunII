@@ -59,9 +59,10 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   TH1D* hPtMC = new TH1D("hPtMC","",nBins,ptBins);
   TH1D* hPtGen = new TH1D("hPtGen","",nBins,ptBins);
 
-  TH1D* hMean = new TH1D("hMean","",nBins,ptBins);                          // f parameter 1
-  TH1D* hSigmaGaus1 = new TH1D("hSigmaGaus1","",nBins,ptBins);  // f parameter 2
-  TH1D* hSigmaGaus2 = new TH1D("hSigmaGaus2","",nBins,ptBins);  // f parameter 10
+  TH1D* hMean = new TH1D("hMean","",nBins,ptBins);                       
+  TH1D* hSigmaGaus1 = new TH1D("hSigmaGaus1","",nBins,ptBins); 
+  TH1D* hSigmaGaus2 = new TH1D("hSigmaGaus2","",nBins,ptBins); 
+  TH1D* hRelMagnGaus1Gaus2 = new TH1D("hRelMagnGaus1Gaus2","",nBins,ptBins); 
   
   for(int i=0;i<nBins;i++)
     {
@@ -76,7 +77,8 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
       hSigmaGaus1->SetBinError(i+1,f->GetParError(2));
       hSigmaGaus2->SetBinContent(i+1,f->GetParameter(5));
       hSigmaGaus2->SetBinError(i+1,f->GetParError(5));
-      std::cout<<"parameter 10="<<f->GetParameter(5)<<std::endl;
+      hRelMagnGaus1Gaus2->SetBinContent(i+1,f->GetParameter(4));
+      hRelMagnGaus1Gaus2->SetBinError(i+1,f->GetParError(4));
     }  
 
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
@@ -141,6 +143,7 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   hMean->Write();
   hSigmaGaus1->Write();
   hSigmaGaus2->Write();
+  hRelMagnGaus1Gaus2->Write();
   outf->Close();
 }
 
