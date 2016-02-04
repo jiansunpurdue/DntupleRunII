@@ -59,6 +59,10 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   TH1D* hPtMC = new TH1D("hPtMC","",nBins,ptBins);
   TH1D* hPtGen = new TH1D("hPtGen","",nBins,ptBins);
 
+  TH1D* hMean = new TH1D("hMean","",nBins,ptBins);                          // f parameter 1
+  TH1D* hSigmaGaus1 = new TH1D("hSigmaGaus1","",nBins,ptBins);  // f parameter 2
+  TH1D* hSigmaGaus2 = new TH1D("hSigmaGaus2","",nBins,ptBins);  // f parameter 10
+  
   for(int i=0;i<nBins;i++)
     {
       TF1* f = fit(nt,ntMC,ptBins[i],ptBins[i+1]);
@@ -66,6 +70,13 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
       double yieldErr = f->Integral(minhisto,maxhisto)/binwidthmass*f->GetParError(0)/f->GetParameter(0);
       hPt->SetBinContent(i+1,yield/(ptBins[i+1]-ptBins[i]));
       hPt->SetBinError(i+1,yieldErr/(ptBins[i+1]-ptBins[i]));
+      hMean->SetBinContent(i+1,f->GetParameter(1));
+      hMean->SetBinError(i+1,f->GetParError(1));
+      hSigmaGaus1->SetBinContent(i+1,f->GetParameter(2));
+      hSigmaGaus1->SetBinError(i+1,f->GetParError(2));
+      hSigmaGaus2->SetBinContent(i+1,f->GetParameter(5));
+      hSigmaGaus2->SetBinError(i+1,f->GetParError(5));
+      std::cout<<"parameter 10="<<f->GetParameter(5)<<std::endl;
     }  
 
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
@@ -127,6 +138,9 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   hPtMC->Write();
   hPtCor->Write();
   hPtSigma->Write();
+  hMean->Write();
+  hSigmaGaus1->Write();
+  hSigmaGaus2->Write();
   outf->Close();
 }
 
@@ -214,6 +228,8 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   f->ReleaseParameter(1);
+  f->ReleaseParameter(2);                                     // you need to release these two parameters if you want to perform studies on the sigma shape
+  f->ReleaseParameter(10);                                   // you need to release these two parameters if you want to perform studies on the sigma shape
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);

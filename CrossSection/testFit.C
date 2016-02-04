@@ -99,11 +99,15 @@ void testFit(int count=1)
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   f->ReleaseParameter(1);
+  f->ReleaseParameter(2);                                     // you need to release these two parameters if you want to perform studies on the sigma shape
+  f->ReleaseParameter(10);                                   // you need to release these two parameters if you want to perform studies on the sigma shape
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L m","",minhisto,maxhisto);
   
+  std::cout<<"parameter 10="<<f->GetParameter(10)<<std::endl;
+
   TF1* background = new TF1(Form("background%d",count),"[0]+[1]*x+[2]*x*x+[3]*x*x*x");
   background->SetParameter(0,f->GetParameter(3));
   background->SetParameter(1,f->GetParameter(4));
