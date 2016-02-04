@@ -13,7 +13,7 @@ Double_t maxhisto=2.0;
 Double_t nbinsmasshisto=60;
 Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 
-TString weight = "1";
+TString weight = "pthatweight";
 TString seldata;
 TString selmc;
 TString collisionsystem;
@@ -33,7 +33,7 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   gStyle->SetTitleX(.0f);
 
   void clean0 (TH1D* h);
-  TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax);
+  TF1* fit (TTree* nt, TTree* ntMC, double ptmin, double ptmax, int isMC);
 
   if(!doweight) weight="1";
   TFile* inf = new TFile(inputdata.Data());
@@ -43,29 +43,44 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   TTree* HltTree= (TTree*) inf->Get("ntHlt");
   HltTree->AddFriend(nt);
   nt->AddFriend(HltTree);
+  TTree* ntHid = (TTree*) inf->Get("ntHi");
+  nt->AddFriend(ntHid);
   
   TTree* ntMC = (TTree*)infMC->Get("ntDkpi");
   TTree* ntGen = (TTree*)infMC->Get("ntGen");
-  TTree* MCHltTree;
-  //if (collisionsystem=="PP") MCHltTree= (TTree*)infMC->Get("ntHlt");
-  //else MCHltTree= (TTree*)infMC->Get("HltTree");
-  //MCHltTree= (TTree*)infMC->Get("ntHlt");
-
+  TTree* ntHi = (TTree*)infMC->Get("ntHi");
+  
   ntGen->AddFriend(ntMC);
-  //MCHltTree->AddFriend(ntMC);
+  ntGen->AddFriend(ntHi);
+  ntMC->AddFriend(ntGen);
+  ntMC->AddFriend(ntHi);
+  ntHi->AddFriend(ntMC);
   
   TH1D* hPt = new TH1D("hPt","",nBins,ptBins);
   TH1D* hPtRecoTruth = new TH1D("hPtRecoTruth","",nBins,ptBins);
   TH1D* hPtMC = new TH1D("hPtMC","",nBins,ptBins);
   TH1D* hPtGen = new TH1D("hPtGen","",nBins,ptBins);
 
+  TH1D* hMean = new TH1D("hMean","",nBins,ptBins);                       
+  TH1D* hSigmaGaus1 = new TH1D("hSigmaGaus1","",nBins,ptBins); 
+  TH1D* hSigmaGaus2 = new TH1D("hSigmaGaus2","",nBins,ptBins); 
+  TH1D* hRelMagnGaus1Gaus2 = new TH1D("hRelMagnGaus1Gaus2","",nBins,ptBins); 
+  
   for(int i=0;i<nBins;i++)
     {
-      TF1* f = fit(nt,ntMC,ptBins[i],ptBins[i+1]);
+      TF1* f = fit(nt,ntMC,ptBins[i],ptBins[i+1],isMC);
       double yield = f->Integral(minhisto,maxhisto)/binwidthmass;
       double yieldErr = f->Integral(minhisto,maxhisto)/binwidthmass*f->GetParError(0)/f->GetParameter(0);
       hPt->SetBinContent(i+1,yield/(ptBins[i+1]-ptBins[i]));
       hPt->SetBinError(i+1,yieldErr/(ptBins[i+1]-ptBins[i]));
+      hMean->SetBinContent(i+1,f->GetParameter(1));
+      hMean->SetBinError(i+1,f->GetParError(1));
+      hSigmaGaus1->SetBinContent(i+1,f->GetParameter(2));
+      hSigmaGaus1->SetBinError(i+1,f->GetParError(2));
+      hSigmaGaus2->SetBinContent(i+1,f->GetParameter(5));
+      hSigmaGaus2->SetBinError(i+1,f->GetParError(5));
+      hRelMagnGaus1Gaus2->SetBinContent(i+1,f->GetParameter(4));
+      hRelMagnGaus1Gaus2->SetBinError(i+1,f->GetParError(4));
     }  
 
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
@@ -127,6 +142,10 @@ void fitD(TString inputdata="/data/dmeson2015/DataDntuple/nt_20160112_DfinderDat
   hPtMC->Write();
   hPtCor->Write();
   hPtSigma->Write();
+  hMean->Write();
+  hSigmaGaus1->Write();
+  hSigmaGaus2->Write();
+  hRelMagnGaus1Gaus2->Write();
   outf->Close();
 }
 
@@ -138,7 +157,7 @@ void clean0(TH1D* h)
     }
 }
 
-TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
+TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax, int isMC)
 {
   static int count=0;
   count++;
@@ -150,10 +169,20 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   
   TF1* f = new TF1(Form("f%d",count),"[0]*([7]*([9]*Gaus(x,[1],[2])/(sqrt(2*3.14159)*[2])+(1-[9])*Gaus(x,[1],[10])/(sqrt(2*3.14159)*[10]))+(1-[7])*Gaus(x,[1],[8])/(sqrt(2*3.14159)*[8]))+[3]+[4]*x+[5]*x*x+[6]*x*x*x", 1.7, 2.0);
   
-  nt->Project(Form("h-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  if(isMC==1) nt->Project(Form("h-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f)",weight.Data(),seldata.Data(),ptmin,ptmax));   
+  else nt->Project(Form("h-%d",count),"Dmass",Form("(%s&&Dpt>%f&&Dpt<%f)",seldata.Data(),ptmin,ptmax));   
+  
   ntMC->Project(Form("hMCSignal-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23333))",weight.Data(),selmc.Data(),ptmin,ptmax));   
   ntMC->Project(Form("hMCSwapped-%d",count),"Dmass",Form("%s*(%s&&Dpt>%f&&Dpt<%f&&(Dgen==23344))",weight.Data(),selmc.Data(),ptmin,ptmax));   
-
+  
+  /*
+  TFile *fout=new TFile(Form("FitsFiles/Fits_%s_%d.root",collisionsystem.Data(),count),"recreate");
+  fout->cd();
+  hMCSignal->Write();
+  hMCSwapped->Write();
+  h->Write();  
+  */
+  
   f->SetParLimits(4,-1000,1000);
   f->SetParLimits(10,0.001,0.05);
   f->SetParLimits(2,0.01,0.1);
@@ -208,6 +237,8 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax)
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   f->ReleaseParameter(1);
+  //f->ReleaseParameter(2);                                     // you need to release these two parameters if you want to perform studies on the sigma shape
+  //f->ReleaseParameter(10);                                   // you need to release these two parameters if you want to perform studies on the sigma shape
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
