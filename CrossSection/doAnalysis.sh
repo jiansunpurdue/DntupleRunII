@@ -6,13 +6,14 @@ cp config/parametersHighpt.h parameters.h
 DOFONLL=0
 DOTRGCOMBINATION=0
 DOFEEDDOWN=0
-DOFITSPP=0
-DOFITSPbPb=1
+DOFITSPP=1
+DOFITSPPMCClosure=1
+DOFITSPbPb=0
 DOMCstudyPP=0
-DOMCstudyPbPb=1
+DOMCstudyPbPb=0
 DOCrossSectionPP=0
-DOCrossSectionPbPb=1
-DORAA=1
+DOCrossSectionPbPb=0
+DORAA=0
 
 FONLLDATINPUT="pp_d0meson_5TeV_y1"
 FONLLDATINPUTBtoD="pp_Btod0meson_5TeV_y1"
@@ -23,6 +24,7 @@ FONLLOUTPUTFILEBtoD="output_pp_Btod0meson_5TeV_y1.root"
 FONLLOUTPUTFILEInclusiveD="output_inclusiveDd0meson_5TeV_y1.root"
 FONLLOUTPUTFILEB="output_pp_Bmeson_5TeV_y1.root"
 OUTPUTFILEPP="hPtSpectrumDzeroPP.root"
+OUTPUTFILEPPMCClosure="hPtSpectrumDzeroPPMCClosure.root"
 OUTPUTFILEPlotPP="CrossSectionFONLLPP.root"
 OUTPUTFILEPbPb="hPtSpectrumDzeroPbPb.root"
 OUTPUTFILEPlotPbPb="CrossSectionFONLLPbPb.root"
@@ -45,6 +47,13 @@ TRGPP="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>20&&Dpt<40)||(HLT_DmesonPPTrac
 LABELPP="PP"
 USEPRESCALEPP=1
 CUTFORTRIGGERPRESCALEPP=60
+
+LUMIPPMCClosure=1
+ISMCPPMCClosure=1
+ISDOWEIGHTPPMCClosure=1
+TRGPPMCClosure="1"
+LABELPPMCClosure="PPMCClosure"
+
                                          
 LUMIPbPb=0.000404 #404*0.001*0.001
 ISMCPbPb=0
@@ -94,6 +103,12 @@ if [ $DOFITSPP -eq 1 ]; then
 g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe 
 ./fitD.exe "$INPUTDATAPP"  "$INPUTMCPP"  "$TRGPP" "$CUTPP"   "$SELGENPP"   "$ISMCPP"   "$LUMIPP"   "$ISDOWEIGHTPP"   "$LABELPP"  "$OUTPUTFILEPP"
 fi
+
+if [ $DOFITSPPMCClosure -eq 1 ]; then      
+g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe 
+./fitD.exe "$INPUTMCPP"  "$INPUTMCPP"  "$TRGPPMCClosure" "$CUTPP"   "$SELGENPP"   "$ISMCPPMCClosure"   "$LUMIPPMCClosure"   "$ISMCPPMCClosure"   "$LABELPPMCClosure"  "$OUTPUTFILEPPMCClosure"
+fi
+
 
 if [ $DOFITSPbPb -eq 1 ]; then      
 g++ fitD.C $(root-config --cflags --libs) -g -o fitD.exe 
