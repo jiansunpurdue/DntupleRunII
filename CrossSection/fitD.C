@@ -237,8 +237,8 @@ TF1* fit(TTree* nt, TTree* ntMC, Double_t ptmin, Double_t ptmax, int isMC)
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"q","",minhisto,maxhisto);
   f->ReleaseParameter(1);
-  f->ReleaseParameter(2);                                     // you need to release these two parameters if you want to perform studies on the sigma shape
-  f->ReleaseParameter(10);                                   // you need to release these two parameters if you want to perform studies on the sigma shape
+  //f->ReleaseParameter(2);                                     // you need to release these two parameters if you want to perform studies on the sigma shape
+  //f->ReleaseParameter(10);                                   // you need to release these two parameters if you want to perform studies on the sigma shape
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);
   h->Fit(Form("f%d",count),"L q","",minhisto,maxhisto);

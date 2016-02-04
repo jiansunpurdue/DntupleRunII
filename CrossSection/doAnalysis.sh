@@ -3,17 +3,17 @@
 
 cp config/parametersHighpt.h parameters.h 
 
-DOFONLL=0
-DOTRGCOMBINATION=0
-DOFEEDDOWN=0
-DOFITSPP=1
-DOFITSPPMCClosure=1
+DOFONLL=1
+DOTRGCOMBINATION=1
+DOFEEDDOWN=1
+DOFITSPP=0
+DOFITSPPMCClosure=0
 DOFITSPbPb=0
-DOMCstudyPP=0
-DOMCstudyPbPb=0
-DOCrossSectionPP=0
+DOMCstudyPP=1
+DOMCstudyPbPb=1
+DOCrossSectionPP=1
 DOCrossSectionPbPb=0
-DORAA=0
+DORAA=-
 
 FONLLDATINPUT="pp_d0meson_5TeV_y1"
 FONLLDATINPUTBtoD="pp_Btod0meson_5TeV_y1"
@@ -30,10 +30,10 @@ OUTPUTFILEPbPb="hPtSpectrumDzeroPbPb.root"
 OUTPUTFILEPlotPbPb="CrossSectionFONLLPbPb.root"
 
 NTUPLAPYTHIA="/data/HeavyFlavourRun2/BtoDPythia/treefile_ptall_11january2016.root"
-INPUTMCPP="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_pthatweight.root"
+INPUTMCPP="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8_prompt_D0_dPt0tkPt0p5_pthatweight.root"
 INPUTDATAPP="/data/dmeson2015/DataDntuple/nt_20160112_DfinderData_pp_20160111_dPt0tkPt1_D0Dstar3p5p_DCSJSON_v2.root"
 #INPUTMCPbPb="/data/wangj/MC2015/Dntuple/PbPb/ntD_PbPb_Dzero_kpi/ntD_EvtBase_20160127_Dfinder_20151229_Pythia8_prompt_D0_pthatweight.root "
-INPUTMCPbPb="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_pthatweight.root"
+INPUTMCPbPb="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8_prompt_D0_dPt0tkPt0p5_pthatweight.root"
 INPUTDATAPbPb="/data/dmeson2015/DataDntuple/nt_skimmed_DfinderData_PbPb_20160126_dPt0tkPt2p5_D0Dstar3p5p_FINALJSON_v6_partialstats_v2.root"
 
 LUMIPP=26.31
