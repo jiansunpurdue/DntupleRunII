@@ -16,7 +16,7 @@ Double_t binwidthmass=(maxhisto-minhisto)/nbinsmasshisto;
 TString weight = "pthatweight";
 TString selmc;
 
-void MCefficiency(TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_pthatweight.root", TString selmcgen="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))",TString selmcgenacceptance="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))&&abs(Gtk1eta)<2.0&&abs(Gtk2eta)<2.0&&Gtk1pt>2.0&&Gtk2pt>2.0", TString cut_recoonly="Dy>-1.&&Dy<1.&&Dtrk1highPurity&&Dtrk2highPurity&&Dtrk1Pt>2.0&&Dtrk2Pt>2.0&&Dtrk1PtErr/Dtrk1Pt<0.1&&Dtrk2PtErr/Dtrk2Pt<0.1&&abs(Dtrk1Eta)<2.0&&abs(Dtrk2Eta)<2.0&&Dtrk1Algo>3&&Dtrk1Algo<8&&(Dtrk1PixelHit+Dtrk1StripHit)>=11", TString cut="Dy>-1.&&Dy<1.&&Dtrk1highPurity&&Dtrk2highPurity&&Dtrk1Pt>2.0&&Dtrk2Pt>2.0&&(DsvpvDistance/DsvpvDisErr)>3.5&&(DlxyBS/DlxyBSErr)>1.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1PtErr/Dtrk1Pt<0.1&&Dtrk2PtErr/Dtrk2Pt<0.1&&abs(Dtrk1Eta)<2.0&&abs(Dtrk2Eta)<2.0&&Dtrk1Algo>3&&Dtrk1Algo<8&&(Dtrk1PixelHit+Dtrk1StripHit)>=11",TString label="PP")
+void MCefficiency(TString inputmc="/data/wangj/MC2015/Dntuple/backup/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_pthatweight.root", TString selmcgen="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))",TString selmcgenacceptance="((GisSignal==1||GisSignal==2)&&(Gy>-1&&Gy<1))&&abs(Gtk1eta)<2.0&&abs(Gtk2eta)<2.0&&Gtk1pt>2.0&&Gtk2pt>2.0", TString cut_recoonly="Dy>-1.&&Dy<1.&&Dtrk1highPurity&&Dtrk2highPurity&&Dtrk1Pt>2.0&&Dtrk2Pt>2.0&&Dtrk1PtErr/Dtrk1Pt<0.1&&Dtrk2PtErr/Dtrk2Pt<0.1&&abs(Dtrk1Eta)<2.0&&abs(Dtrk2Eta)<2.0&&Dtrk1Algo>3&&Dtrk1Algo<8&&(Dtrk1PixelHit+Dtrk1StripHit)>=11", TString cut="Dy>-1.&&Dy<1.&&Dtrk1highPurity&&Dtrk2highPurity&&Dtrk1Pt>2.0&&Dtrk2Pt>2.0&&(DsvpvDistance/DsvpvDisErr)>3.5&&(DlxyBS/DlxyBSErr)>1.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1PtErr/Dtrk1Pt<0.1&&Dtrk2PtErr/Dtrk2Pt<0.1&&abs(Dtrk1Eta)<2.0&&abs(Dtrk2Eta)<2.0&&Dtrk1Algo>3&&Dtrk1Algo<8&&(Dtrk1PixelHit+Dtrk1StripHit)>=11",TString label="PP")
 {
   selmc = Form("%s",cut.Data());
 
@@ -41,8 +41,8 @@ void MCefficiency(TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kp
   TH1D* hPtMCrecoonly = new TH1D("hPtMCrecoonly","",nBins,ptBins);
   TH1D* hPtGen = new TH1D("hPtGen","",nBins,ptBins);
   TH1D* hPtGenAcc = new TH1D("hPtGenAcc","",nBins,ptBins);
-  TH1D* hpthat = new TH1D("hpthat","",100,0,100);
-  TH1D* hpthatweight = new TH1D("hpthatweight","",100,0,100);
+  TH1D* hPthat = new TH1D("hPthat","",100,0,500);
+  TH1D* hPthatweight = new TH1D("hPthatweight","",100,0,500);
 
   ntMC->Project("hPtMC","Dpt",TCut(weight)*(TCut(selmc.Data())&&"(Dgen==23333)"));
   divideBinWidth(hPtMC);
@@ -52,6 +52,9 @@ void MCefficiency(TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kp
   divideBinWidth(hPtGen);
   ntGen->Project("hPtGenAcc","Gpt",TCut(weight)*(TCut(selmcgenacceptance.Data())));
   divideBinWidth(hPtGenAcc);
+
+  ntMC->Project("hPthat","pthat","1");
+  ntMC->Project("hPthatweight","pthat",TCut(weight));
 
   hPtMC->Sumw2();
   TH1D* hEff = (TH1D*)hPtMC->Clone("hEff");
@@ -112,6 +115,40 @@ void MCefficiency(TString inputmc="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kp
   hemptyEff->Draw();
   hEff->Draw("same");
   canvasEff->SaveAs(Form("canvasEff_study%s.pdf",Form(label.Data())));
+  
+  
+  TH2F* hemptyPthat=new TH2F("hemptyPthat","",50,0.,500.,10,1,1e9);  
+  hemptyPthat->GetXaxis()->CenterTitle();
+  hemptyPthat->GetYaxis()->CenterTitle();
+  hemptyPthat->GetYaxis()->SetTitle("Entries");
+  hemptyPthat->GetXaxis()->SetTitle("pthat");
+  hemptyPthat->GetXaxis()->SetTitleOffset(0.9);
+  hemptyPthat->GetYaxis()->SetTitleOffset(0.95);
+  hemptyPthat->GetXaxis()->SetTitleSize(0.05);
+  hemptyPthat->GetYaxis()->SetTitleSize(0.05);
+  hemptyPthat->GetXaxis()->SetTitleFont(42);
+  hemptyPthat->GetYaxis()->SetTitleFont(42);
+  hemptyPthat->GetXaxis()->SetLabelFont(42);
+  hemptyPthat->GetYaxis()->SetLabelFont(42);
+  hemptyPthat->GetXaxis()->SetLabelSize(0.035);
+  hemptyPthat->GetYaxis()->SetLabelSize(0.035);  
+  hemptyPthat->SetMaximum(2);
+  hemptyPthat->SetMinimum(0.);
+
+  TH2F* hemptyPthatWeighted=(TH2F*)hemptyPthat->Clone("hemptyPthatWeighted");
+  hemptyPthatWeighted->GetXaxis()->SetTitle("pthat reweighted");
+  
+  TCanvas*canvasPthat=new TCanvas("canvasPthat","canvasPthat",1000.,500);
+  canvasPthat->Divide(2,1);
+  canvasPthat->cd(1);
+  gPad->SetLogy();
+  hemptyPthat->Draw("same");
+  hPthat->Draw("same");
+  canvasPthat->cd(2);
+  gPad->SetLogy();
+  hemptyPthatWeighted->Draw();
+  hPthatweight->Draw("same");
+  canvasPthat->SaveAs(Form("canvasPthat_%s.pdf",Form(label.Data())));
 
 }
 
