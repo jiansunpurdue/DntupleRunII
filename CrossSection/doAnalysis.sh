@@ -6,10 +6,11 @@ cp config/parametersHighpt.h parameters.h
 DOFONLL=0
 DOTRGCOMBINATION=0
 DOFEEDDOWN=0
-DOFITSPP=1
-DOFITSPPMCClosure=1
+DOFITSPP=0
+DOFITSPPMCClosure=0
 DOFITSPbPb=0
-DOMCstudyPP=0
+DOMCstudyPP=1
+DOMCstudyNPPP=1
 DOMCstudyPbPb=0
 DOCrossSectionPP=0
 DOCrossSectionPbPb=0
@@ -31,6 +32,7 @@ OUTPUTFILEPlotPbPb="CrossSectionFONLLPbPb.root"
 
 NTUPLAPYTHIA="/data/HeavyFlavourRun2/BtoDPythia/treefile_ptall_11january2016.root"
 INPUTMCPP="/data/wangj/MC2015/Dntuple/backup/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_pthatweight.root"
+INPUTMCNPPP="/data/wangj/MC2015/Dntuple/pp/ntD_pp_Dzero_kpi_nonprompt/ntD_EvtBase_20160203_Dfinder_20160201_pp_Pythia8_nonprompt_D0_dPt0tkPt0p5_pthatweight.root"
 INPUTDATAPP="/data/dmeson2015/DataDntuple/nt_20160112_DfinderData_pp_20160111_dPt0tkPt1_D0Dstar3p5p_DCSJSON_v2.root"
 #INPUTMCPbPb="/data/wangj/MC2015/Dntuple/PbPb/ntD_PbPb_Dzero_kpi/ntD_EvtBase_20160127_Dfinder_20151229_Pythia8_prompt_D0_pthatweight.root "
 INPUTMCPbPb="/data/wangj/MC2015/Dntuple/backup/ntD_EvtBase_20160125_Dfinder_20151229_pp_Pythia8_prompt_D0_pthatweight.root"
@@ -45,6 +47,7 @@ RECOONLYPP="Dy>-1.&&Dy<1.&&Dtrk1highPurity&&Dtrk2highPurity&&Dtrk1Pt>2.0&&Dtrk2P
 CUTPP="Dy>-1.&&Dy<1.&&Dtrk1highPurity&&Dtrk2highPurity&&Dtrk1Pt>2.0&&Dtrk2Pt>2.0&&(DsvpvDistance/DsvpvDisErr)>3.5&&(DlxyBS/DlxyBSErr)>1.5&&Dchi2cl>0.05&&Dalpha<0.12&&Dtrk1PtErr/Dtrk1Pt<0.1&&Dtrk2PtErr/Dtrk2Pt<0.1&&abs(Dtrk1Eta)<2.0&&abs(Dtrk2Eta)<2.0&&Dtrk1Algo>3&&Dtrk1Algo<8&&(Dtrk1PixelHit+Dtrk1StripHit)>=11"
 TRGPP="((HLT_DmesonPPTrackingGlobal_Dpt15_v1&&Dpt>20&&Dpt<40)||(HLT_DmesonPPTrackingGlobal_Dpt30_v1&&Dpt>40&&Dpt<60)||(HLT_DmesonPPTrackingGlobal_Dpt50_v1&&Dpt>60))"
 LABELPP="PP"
+LABELNPPP="NPPP"
 USEPRESCALEPP=1
 CUTFORTRIGGERPRESCALEPP=60
 
@@ -119,6 +122,12 @@ if [ $DOMCstudyPP -eq 1 ]; then
 g++ MCefficiency.C $(root-config --cflags --libs) -g -o MCefficiency.exe 
 ./MCefficiency.exe "$INPUTMCPP"  "$SELGENPP" "$SELGENPPACCPP"  "$RECOONLYPP" "$CUTPP"  "$LABELPP"
 fi
+
+if [ $DOMCstudyNPPP -eq 1 ]; then      
+g++ MCefficiency.C $(root-config --cflags --libs) -g -o MCefficiency.exe 
+./MCefficiency.exe "$INPUTMCNPPP"  "$SELGENPP" "$SELGENPPACCPP"  "$RECOONLYPP" "$CUTPP"  "$LABELNPPP"
+fi
+
 
 if [ $DOMCstudyPbPb -eq 1 ]; then      
 g++ MCefficiency.C $(root-config --cflags --libs) -g -o MCefficiency.exe 
