@@ -59,10 +59,21 @@ void YieldStudies(TString inputPP="hPtSpectrumDzeroPP.root",TString inputPPMC="h
   hemptyRelMag->GetXaxis()->SetLabelSize(0.04);
   hemptyRelMag->GetYaxis()->SetLabelSize(0.04);  
 
-
-  TH2F* hemptySigma2=(TH2F*)hemptySigma1->Clone("hemptySigma2");
+  TH2F* hemptySigma2=new TH2F("hemptySigma2","",50,0.,100.,10.,0.,0.03);  
+  hemptySigma2->GetXaxis()->CenterTitle();
+  hemptySigma2->GetYaxis()->CenterTitle();
+  hemptySigma2->GetXaxis()->SetTitle("p_{T} (GeV/c)");
   hemptySigma2->GetYaxis()->SetTitle("#sigma_{2} (GeV/c^{2})");
-  hemptySigma2->GetYaxis()->SetRangeUser(0,0.03);
+  hemptySigma2->GetXaxis()->SetTitleOffset(1.);
+  hemptySigma2->GetYaxis()->SetTitleOffset(1.4);
+  hemptySigma2->GetXaxis()->SetTitleSize(0.045);
+  hemptySigma2->GetYaxis()->SetTitleSize(0.05);
+  hemptySigma2->GetXaxis()->SetTitleFont(42);
+  hemptySigma2->GetYaxis()->SetTitleFont(42);
+  hemptySigma2->GetXaxis()->SetLabelFont(42);
+  hemptySigma2->GetYaxis()->SetLabelFont(42);
+  hemptySigma2->GetXaxis()->SetLabelSize(0.04);
+  hemptySigma2->GetYaxis()->SetLabelSize(0.04);  
   
   TH2F* hemptyMean=new TH2F("hemptyMean","",50,0.,110.,10.,1.855,1.88);  
   hemptyMean->GetXaxis()->CenterTitle();
