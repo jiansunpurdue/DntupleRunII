@@ -117,7 +117,7 @@ void MCefficiency(TString inputmc="/data/wangj/MC2015/Dntuple/backup/ntD_EvtBase
   canvasEff->SaveAs(Form("canvasEff_study%s.pdf",Form(label.Data())));
   
   
-  TH2F* hemptyPthat=new TH2F("hemptyPthat","",50,0.,500.,10,1,1e9);  
+  TH2F* hemptyPthat=new TH2F("hemptyPthat","",50,0.,500.,10,1e-5,1e9);  
   hemptyPthat->GetXaxis()->CenterTitle();
   hemptyPthat->GetYaxis()->CenterTitle();
   hemptyPthat->GetYaxis()->SetTitle("Entries");
